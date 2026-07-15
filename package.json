@@ -42,12 +42,12 @@
     "axios": "^1.10.0",
     "clsx": "^2.1.1",
     "file-saver": "^2.0.5",
-    "framer-motion": "^11.0.0",
+    "framer-motion": "^11.18.0",
     "html-react-parser": "^5.2.5",
     "jwt-decode": "^4.0.0",
     "lexical": "^0.33.1",
     "lucide-react": "^0.525.0",
-    "next": "15.3.4",
+    "next": "^15.5.20",
     "nprogress": "^0.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.1.0",
@@ -66,7 +66,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19.1.6",
     "eslint": "^9",
-    "eslint-config-next": "15.3.4",
+    "eslint-config-next": "^15.5.20",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

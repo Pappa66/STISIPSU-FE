@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import OptimizedImage from '@/components/common/OptimizedImage';
+import AnimatedSection from '@/components/common/AnimatedSection';
 
 interface GalleryItem {
   id: string;
@@ -16,14 +18,10 @@ interface Props {
 const ITEMS_PER_PAGE = 16;
 
 export default function GalleryListClient({ galleryItems }: Props) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(galleryItems.length / ITEMS_PER_PAGE);
   const visibleItems = galleryItems.slice(0, currentPage * ITEMS_PER_PAGE);
-
-  const buildImageUrl = (base: string, image: string) =>
-    `${base.replace(/\/$/, "")}/${image.replace(/^\//, "")}`;
 
   const handleLoadMore = () => {
     if (currentPage < totalPages) {
@@ -35,16 +33,19 @@ export default function GalleryListClient({ galleryItems }: Props) {
     <>
       {visibleItems.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {visibleItems.map((item) => (
-            <div
+          {visibleItems.map((item, index) => (
+            <AnimatedSection
               key={item.id}
+              direction="up"
+              delay={index * 0.05}
               className="group block bg-white rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl"
             >
-              <div className="relative">
-                <img
-                  src={buildImageUrl(baseUrl, item.imageUrl)}
+              <div className="relative aspect-video">
+                <OptimizedImage
+                  src={item.imageUrl}
                   alt={item.title}
-                  className="w-full aspect-video object-cover rounded-t-md z-10 relative"
+                  fill
+                  className="rounded-t-md z-10"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300 z-0 pointer-events-none" />
               </div>
@@ -52,7 +53,7 @@ export default function GalleryListClient({ galleryItems }: Props) {
                 <h3 className="font-semibold text-gray-800">{item.title}</h3>
                 <p className="text-sm text-gray-500 mt-1">{item.description}</p>
               </div>
-            </div>
+            </AnimatedSection>
           ))}
         </div>
       ) : (

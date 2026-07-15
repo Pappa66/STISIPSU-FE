@@ -3,6 +3,9 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import OptimizedImage, { Img } from '@/components/common/OptimizedImage';
+import AnimatedSection from '@/components/common/AnimatedSection';
+import { buildImageUrl } from '@/utils/image';
 import { ArrowRight, User, Calendar } from "lucide-react";
 import useSWR from "swr";
 import BannerSlider from "./BannerSlider";
@@ -26,9 +29,7 @@ function splitBlocks(blocks: Block[]) {
   return { textBlocks, mediaBlocks };
 }
 
-function buildImageUrl(baseUrl: string, imageUrl: string) {
-  return `${baseUrl.replace(/\/$/, "")}/${imageUrl.replace(/^\//, "")}`;
-}
+
 
 function IntroSection() {
   const postId = "cmrlfbop40001l904ds38tmu6";
@@ -85,8 +86,6 @@ export default function HeroSection() {
     fetcher
   );
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
   return (
     <>
       <BannerSlider />
@@ -125,6 +124,7 @@ export default function HeroSection() {
   </div>
 </section>
 
+      <AnimatedSection direction="up">
       <section className="bg-white py-12 px-4">
         <div className="container mx-auto">
           <div className="flex items-center mb-8">
@@ -152,14 +152,10 @@ export default function HeroSection() {
                     className="block rounded-lg border border-gray-200 overflow-hidden shadow hover:shadow-lg transition group bg-white"
                   >
                     <div className="relative h-48 w-full">
-                      <img
-                        src={
-                          item.featuredImageUrl
-                            ? `${process.env.NEXT_PUBLIC_API_URL}${item.featuredImageUrl}`
-                            : "https://placehold.co/600x400?text=Berita"
-                        }
+                      <OptimizedImage
+                        src={item.featuredImageUrl || "https://placehold.co/600x400?text=Berita"}
                         alt={item.title}
-                        className="object-cover w-full h-48"
+                        fill
                       />
                     </div>
                     <div className="p-4">
@@ -194,7 +190,9 @@ export default function HeroSection() {
           )}
         </div>
       </section>
+      </AnimatedSection>
 
+      <AnimatedSection direction="up" delay={0.2}>
       <section className="bg-gray-50 py-12 px-4">
         <div className="container mx-auto">
           <div className="flex items-center mb-8">
@@ -215,11 +213,12 @@ export default function HeroSection() {
                     key={item.id}
                     className="group block bg-white rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg"
                   >
-                    <div className="relative">
-                      <img
-                        src={buildImageUrl(baseUrl, item.imageUrl)}
+                    <div className="relative aspect-video">
+                      <OptimizedImage
+                        src={item.imageUrl}
                         alt={item.title}
-                        className="w-full aspect-video object-cover rounded-t-md"
+                        fill
+                        className="rounded-t-md"
                       />
 
                       <div className="absolute inset-0 bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300 pointer-events-none" />
@@ -245,19 +244,12 @@ export default function HeroSection() {
           )}
         </div>
       </section>
+      </AnimatedSection>
     </>
   );
 }
 
 function BlockRenderer({ block }: { block: Block }) {
-  const fullUrl = (p: string) => {
-    const base = process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, "") || "";
-
-    if (p.startsWith("http")) return p;
-    if (p.startsWith("/")) return `${base}${p}`;
-    return `${base}/${p}`;
-  };
-
   switch (block.type) {
     case "heading":
       return (
@@ -281,9 +273,9 @@ function BlockRenderer({ block }: { block: Block }) {
     case "image":
       return (
         <figure className="my-6">
-          <img
-            src={fullUrl(block.url)}
-            alt={block.url} // Anda bisa meningkatkan ini dengan alt text yang lebih deskriptif
+          <Img
+            src={block.url}
+            alt={block.url}
             className="w-full rounded-lg shadow-md"
           />
         </figure>
@@ -292,7 +284,7 @@ function BlockRenderer({ block }: { block: Block }) {
     case "video":
       return (
         <video
-          src={fullUrl(block.url)}
+          src={buildImageUrl(block.url)}
           controls
           className="w-full my-6 rounded-lg shadow-md"
         ></video>

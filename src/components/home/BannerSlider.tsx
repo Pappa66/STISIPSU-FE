@@ -4,10 +4,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import useSWR from "swr";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import OptimizedImage from '@/components/common/OptimizedImage';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
-const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, "") || "";
-const imgUrl = (path: string) => path?.startsWith("http") ? path : `${baseUrl}/${path.replace(/^\//, "")}`;
 
 interface Banner {
   id: string;
@@ -53,7 +52,7 @@ export default function BannerSlider() {
           key={b.id}
           className={`absolute inset-0 transition-opacity duration-700 ${i === current ? "opacity-100" : "opacity-0"}`}
         >
-          <img src={imgUrl(b.imageUrl)} alt={b.title} className="w-full h-full object-cover" />
+          <OptimizedImage src={b.imageUrl} alt={b.title} fill className="object-cover" />
           <div className="absolute inset-0 bg-black/40" />
         </div>
       ))}

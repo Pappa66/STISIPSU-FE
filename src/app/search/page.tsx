@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Book, FileText, Image as ImageIcon } from 'lucide-react';
+import OptimizedImage from '@/components/common/OptimizedImage';
 
 interface PostResult {
   id: string;
@@ -123,11 +124,11 @@ function SearchPageComponent() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {results.galleries.map(gallery => (
                 <Link key={gallery.id} href="/galeri" className="block border rounded-lg hover:shadow-lg transition-shadow overflow-hidden group">
-                   <div className="w-full h-32 bg-gray-200">
-                     <img 
-                        src={gallery.imageUrl?.startsWith('http') ? gallery.imageUrl : `${process.env.NEXT_PUBLIC_API_URL || ''}/${gallery.imageUrl.replace(/^\//, '')}`} 
+                   <div className="relative w-full h-32 bg-gray-200">
+                     <OptimizedImage 
+                       src={gallery.imageUrl} 
                        alt={gallery.title} 
-                       className="w-full h-full object-cover"
+                       fill
                      />
                    </div>
                    <div className="p-2">

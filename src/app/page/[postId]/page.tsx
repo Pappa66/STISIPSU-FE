@@ -4,7 +4,8 @@ import { useParams, notFound } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import useSWR from "swr";
-import Image from "next/image";
+import { Img } from '@/components/common/OptimizedImage';
+import { buildImageUrl } from '@/utils/image';
 
 type Block =
   | { id: string; type: "heading"; content: string }
@@ -113,15 +114,6 @@ export default function PublicPostPage() {
 }
 
 function BlockRenderer({ block }: { block: Block }) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
-  const fullUrl = (p: string) => {
-    const base = process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, "") || "";
-
-    if (p.startsWith("http")) return p;
-    if (p.startsWith("/")) return `${base}${p}`;
-    return `${base}/${p}`;
-  };
-
   switch (block.type) {
     case "heading":
       return (
@@ -152,15 +144,12 @@ function BlockRenderer({ block }: { block: Block }) {
       );
 
     case "image":
-      const imageUrl = fullUrl(block.url);
-      console.log("Image URL:", imageUrl);
       return (
         <figure className="my-6">
-          <img
-            src={imageUrl}
+          <Img
+            src={block.url}
             alt="Konten Gambar"
             className="w-full rounded-lg shadow-md"
-            onError={() => console.error("Gagal load:", imageUrl)}
           />
         </figure>
       );
@@ -168,7 +157,7 @@ function BlockRenderer({ block }: { block: Block }) {
     case "video":
       return (
         <video
-          src={fullUrl(block.url)}
+          src={buildImageUrl(block.url)}
           controls
           className="w-full my-6 rounded-lg shadow-md"
         ></video>

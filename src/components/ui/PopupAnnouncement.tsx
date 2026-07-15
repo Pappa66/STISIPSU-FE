@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Megaphone } from 'lucide-react'; // Pastikan kamu pakai lucide-react atau ganti icon
 import { X } from 'lucide-react'; // pastikan lucide-react sudah di-install
+import OptimizedImage from '@/components/common/OptimizedImage';
 
 
 interface Announcement {
@@ -64,11 +65,15 @@ export default function PopupAnnouncement() {
         ) : (
           <div className="flex flex-col items-center gap-4">
             <h2 className="text-xl font-bold text-gray-900 text-center">Pengumuman</h2>
-            <img
-              src={`${process.env.NEXT_PUBLIC_API_URL}${announcement.imageUrl}`}
-              alt="Pengumuman"
-              className="rounded-lg max-h-[320px] w-full object-contain"
-            />
+            <div className="relative w-full max-h-[320px] aspect-video">
+              <OptimizedImage
+                src={announcement.imageUrl}
+                alt="Pengumuman"
+                fill
+                objectFit="contain"
+                className="rounded-lg"
+              />
+            </div>
           </div>
         )}
       </div>

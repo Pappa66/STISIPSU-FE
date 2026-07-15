@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Calendar, User, Tag, ArrowLeft } from "lucide-react";
+import OptimizedImage from '@/components/common/OptimizedImage';
 
 interface Post {
   title: string;
@@ -66,11 +67,6 @@ export default function DetailBeritaPage() {
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
-  const imgUrl = data.featuredImageUrl
-    ? data.featuredImageUrl.startsWith("http")
-      ? data.featuredImageUrl
-      : `${baseUrl}${data.featuredImageUrl}`
-    : null;
 
   return (
     <div className="bg-white">
@@ -105,12 +101,13 @@ export default function DetailBeritaPage() {
             </div>
           </div>
 
-          {imgUrl && (
-            <div className="flex justify-center mb-6">
-              <img
-                src={imgUrl}
+          {data.featuredImageUrl && (
+            <div className="relative w-full max-w-[600px] h-[300px] mx-auto mb-6">
+              <OptimizedImage
+                src={data.featuredImageUrl}
                 alt={data.title}
-                className="rounded-md shadow max-w-full max-h-[300px] object-cover"
+                fill
+                className="rounded-md shadow"
               />
             </div>
           )}
@@ -158,7 +155,7 @@ function renderBlocksToHTML(blocks: any[], baseUrl: string): string {
             ? block.url
             : `${baseUrl}${block.url}`;
           return `<div class="flex justify-center my-4">
-                    <img src="${imgSrc}" alt="" class="rounded-md shadow-sm max-w-full max-h-[250px] object-contain" />
+                    <img src="${imgSrc}" alt="" loading="lazy" class="rounded-md shadow-sm max-w-full max-h-[250px] object-contain" />
                   </div>`;
 
         case "video":

@@ -31,7 +31,7 @@ function buildImageUrl(baseUrl: string, imageUrl: string) {
 }
 
 function IntroSection() {
-  const postId = "cmdq6i8ub000xjshblollkg7j";
+  const postId = "cmrlfbop40001l904ds38tmu6";
   const { data: post, isLoading } = useSWR<PostData>(
     postId ? `${process.env.NEXT_PUBLIC_API_URL}api/posts/${postId}` : null,
     fetcher

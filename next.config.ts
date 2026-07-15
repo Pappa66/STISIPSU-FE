@@ -20,17 +20,18 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "placehold.co",
       },
+      {
+        protocol: "https",
+        hostname: "stisipsu-be.vercel.app",
+      },
+      {
+        protocol: "https",
+        hostname: "**.supabase.co",
+      },
     ],
   },
-  async redirects() {
-    return [
-      {
-        source: "/dashboard",
-        has: [{ type: "host", value: "(.*)" }],
-        destination: "/dashboard",
-        permanent: false,
-      },
-    ];
+  env: {
+    NEXT_PUBLIC_API_URL: (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/?$/, '/'),
   },
 };
 

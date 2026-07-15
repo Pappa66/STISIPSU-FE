@@ -125,7 +125,7 @@ function SearchPageComponent() {
                 <Link key={gallery.id} href="/galeri" className="block border rounded-lg hover:shadow-lg transition-shadow overflow-hidden group">
                    <div className="w-full h-32 bg-gray-200">
                      <img 
-                       src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${gallery.imageUrl}`} 
+                        src={gallery.imageUrl?.startsWith('http') ? gallery.imageUrl : `${process.env.NEXT_PUBLIC_API_URL || ''}/${gallery.imageUrl.replace(/^\//, '')}`} 
                        alt={gallery.title} 
                        className="w-full h-full object-cover"
                      />

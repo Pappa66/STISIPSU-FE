@@ -93,42 +93,6 @@ export default function HeroSection() {
 
       <IntroSection />
 
-      {/* SECTION SUBMENU */}
-      <section className="bg-white py-12 px-4">
-        <div className="container mx-auto">
-          {isLoading && <p>Memuat konten submenu...</p>}
-
-          {post?.blocks ? (
-            (() => {
-              const { textBlocks, mediaBlocks } = splitBlocks(post.blocks);
-              return (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                  {/* LEFT: Text Blocks */}
-                  <div>
-                    {textBlocks.map((block) => (
-                      <BlockRenderer key={block.id} block={block} />
-                    ))}
-                  </div>
-
-                  {/* RIGHT: Media Blocks */}
-                  <div className="bg-sky-700 rounded-lg p-6 text-white">
-                    <h1 className="font-bold">Profil STISIP Syamsul Ulum</h1>
-                    {mediaBlocks.length === 0 && (
-                      <p className="text-white/80">Tidak ada media.</p>
-                    )}
-                    {mediaBlocks.map((block) => (
-                      <BlockRenderer key={block.id} block={block} />
-                    ))}
-                  </div>
-                </div>
-              );
-            })()
-          ) : (
-            <p className="text-gray-500">Tidak ada konten.</p>
-          )}
-        </div>
-      </section>
-
       <section className="bg-[#0077c2] text-white py-5 px-4">
   <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-2 items-center">
     {/* KIRI: Teks + Tombol */}

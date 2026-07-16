@@ -144,7 +144,8 @@ export default function RepositoryManagementPage() {
             />
           </div>
 
-          <div className="bg-white rounded-lg shadow overflow-x-auto">
+          {/* Desktop table */}
+          <div className="hidden md:block bg-white rounded-lg shadow overflow-x-auto">
             <table className="min-w-full text-sm text-left">
               <thead className="bg-gray-50 border-b text-gray-600 font-medium">
                 <tr>
@@ -158,85 +159,80 @@ export default function RepositoryManagementPage() {
               <tbody>
                 {data?.items.map((item) => (
                   <tr key={item.id} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-3 font-semibold text-sky-800">
-                      {item.title}
-                    </td>
-                    <td className="px-4 py-3 text-gray-700">
-                      {item.author} ({item.year})
-                    </td>
+                    <td className="px-4 py-3 font-semibold text-sky-800 break-words max-w-[200px]">{item.title}</td>
+                    <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{item.author} ({item.year})</td>
                     <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() =>
-                          handleToggle(item.id, "visibility", item.visibility)
-                        }
-                        className={`flex items-center justify-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full transition ${
-                          item.visibility === "PUBLISHED"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {item.visibility === "PUBLISHED" ? (
-                          <ToggleRight size={16} />
-                        ) : (
-                          <ToggleLeft size={16} />
-                        )}
-                        {item.visibility === "PUBLISHED"
-                          ? "Diterbitkan"
-                          : "Draft"}
+                      <button onClick={() => handleToggle(item.id, "visibility", item.visibility)}
+                        className={`inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full transition ${
+                          item.visibility === "PUBLISHED" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-800"
+                        }`}>
+                        {item.visibility === "PUBLISHED" ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
+                        {item.visibility === "PUBLISHED" ? "Diterbitkan" : "Draft"}
                       </button>
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() =>
-                          handleToggle(
-                            item.id,
-                            "showDownloadsToPublic",
-                            item.showDownloadsToPublic
-                          )
-                        }
-                        className={`flex items-center justify-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full transition ${
-                          item.showDownloadsToPublic
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {item.showDownloadsToPublic ? (
-                          <Eye size={16} />
-                        ) : (
-                          <EyeOff size={16} />
-                        )}
+                      <button onClick={() => handleToggle(item.id, "showDownloadsToPublic", item.showDownloadsToPublic)}
+                        className={`inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full transition ${
+                          item.showDownloadsToPublic ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-800"
+                        }`}>
+                        {item.showDownloadsToPublic ? <Eye size={16} /> : <EyeOff size={16} />}
                         {item.showDownloadsToPublic ? "Aktif" : "Nonaktif"}
                       </button>
                     </td>
                     <td className="px-4 py-3 text-center">
                       <div className="flex justify-center gap-2">
-                        <Link
-                          href={`/dashboard/repository/edit/${item.id}`}
-                          className="p-2 text-blue-600 hover:bg-blue-100 rounded-md"
-                          title="Edit"
-                        >
-                          <Edit size={16} />
-                        </Link>
-                        <button
-                          onClick={() => confirmDelete(item.id)}
-                          className="p-2 text-red-600 hover:bg-red-100 rounded-md"
-                          title="Hapus"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                        <Link href={`/dashboard/repository/edit/${item.id}`} className="p-2 text-blue-600 hover:bg-blue-100 rounded-md" title="Edit"><Edit size={16} /></Link>
+                        <button onClick={() => confirmDelete(item.id)} className="p-2 text-red-600 hover:bg-red-100 rounded-md" title="Hapus"><Trash2 size={16} /></button>
                       </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-
             {(!data || data.items.length === 0) && (
               <div className="text-center p-16 text-gray-500">
                 <h3 className="text-lg font-semibold">Tidak Ada Data</h3>
-                <p className="mt-1 text-sm">
-                  Belum ada item repositori yang dibuat.
-                </p>
+                <p className="mt-1 text-sm">Belum ada item repositori yang dibuat.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile cards */}
+          <div className="md:hidden space-y-3">
+            {data?.items.map((item) => (
+              <div key={item.id} className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-sky-800 text-sm leading-snug break-words">{item.title}</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">{item.author} ({item.year})</p>
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    <Link href={`/dashboard/repository/edit/${item.id}`} className="p-2 text-blue-600 hover:bg-blue-100 rounded-md" title="Edit"><Edit size={16} /></Link>
+                    <button onClick={() => confirmDelete(item.id)} className="p-2 text-red-600 hover:bg-red-100 rounded-md" title="Hapus"><Trash2 size={16} /></button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button onClick={() => handleToggle(item.id, "visibility", item.visibility)}
+                    className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-full transition ${
+                      item.visibility === "PUBLISHED" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-800"
+                    }`}>
+                    {item.visibility === "PUBLISHED" ? <ToggleRight size={14} /> : <ToggleLeft size={14} />}
+                    {item.visibility === "PUBLISHED" ? "Terbit" : "Draft"}
+                  </button>
+                  <button onClick={() => handleToggle(item.id, "showDownloadsToPublic", item.showDownloadsToPublic)}
+                    className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-full transition ${
+                      item.showDownloadsToPublic ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-800"
+                    }`}>
+                    {item.showDownloadsToPublic ? <Eye size={14} /> : <EyeOff size={14} />}
+                    Unduh: {item.showDownloadsToPublic ? "Aktif" : "Nonaktif"}
+                  </button>
+                </div>
+              </div>
+            ))}
+            {(!data || data.items.length === 0) && (
+              <div className="text-center py-16 text-gray-500">
+                <h3 className="text-lg font-semibold">Tidak Ada Data</h3>
+                <p className="mt-1 text-sm">Belum ada item repositori yang dibuat.</p>
               </div>
             )}
           </div>

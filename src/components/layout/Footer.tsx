@@ -85,7 +85,7 @@ export default function Footer() {
               All rights reserved.
             </p>
             <div className="flex items-center gap-4">
-              <p>Developed by Prasha Digital</p>
+              <a href="https://prashadigitalindonesia.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-300 transition-colors">PT. PRASHA DIGITAL INDONESIA</a>
               <span className="hidden sm:inline">|</span>
               <p>Supported by ICT STISIP</p>
             </div>

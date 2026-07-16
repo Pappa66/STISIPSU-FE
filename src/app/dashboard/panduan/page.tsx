@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   ChevronDown, ChevronRight, BookOpen, Users, GraduationCap, Shield, FileText,
   Newspaper, Image, Speaker, LayoutDashboard, PhoneCall, Link2, UploadCloud,
   User, Briefcase, Search, BookCopy, Menu, Megaphone, ExternalLink, Save,
   Trash2, Edit, CheckCircle, XCircle, Clock, Eye, EyeOff, Download,
   GalleryVertical, Home, ArrowLeft, Globe, Lock, UserCheck, FileUp,
+  Ruler, Quote, Lightbulb, FileImage, ChevronRight as ChevronRightIcon,
 } from "lucide-react";
 
 const sections = [
@@ -311,6 +313,111 @@ const sections = [
       { title: "Pencarian", icon: Search, desc: "Pencarian global di seluruh konten website (berita, halaman, repository, galeri)." },
     ],
   },
+  {
+    id: "media",
+    title: "Panduan Ukuran Media",
+    icon: Ruler,
+    children: [
+      {
+        title: "Banner Slider",
+        icon: Image,
+        desc: "Ukuran ideal: 1920 × 600 px. Rasio 3:1. Format JPG atau WebP. Maksimal 500 KB. Pastikan teks penting berada di area aman (center). Gunakan gambar dengan kontras tinggi agar teks overlay mudah dibaca.",
+      },
+      {
+        title: "Featured Image Berita",
+        icon: Newspaper,
+        desc: "Ukuran ideal: 1200 × 630 px. Rasio 1.9:1. Format JPG/WebP. Maksimal 300 KB. Gambar akan ditampilkan sebagai thumbnail di list berita dan header di halaman detail.",
+      },
+      {
+        title: "Galeri Foto",
+        icon: GalleryVertical,
+        desc: "Ukuran ideal: 800 × 600 px (atau 4:3). Minimal 600 × 450 px. Format JPG/WebP. Maksimal 400 KB per gambar. Hindari ukuran terlalu besar karena akan memperlambat loading halaman galeri.",
+      },
+      {
+        title: "Pengumuman (Gambar)",
+        icon: Megaphone,
+        desc: "Ukuran ideal: 600 × 400 px. Rasio 3:2. Format JPG/WebP. Maksimal 200 KB. Gambar akan tampil di pop-up pengumuman.",
+      },
+      {
+        title: "Logo / Ikon",
+        icon: FileImage,
+        desc: "Ukuran: 200 × 200 px (minimal). Format PNG dengan background transparan. Ukuran file maksimal 100 KB.",
+      },
+    ],
+  },
+  {
+    id: "citation",
+    title: "APA & BibTeX (Sitasi Karya Ilmiah)",
+    icon: Quote,
+    children: [
+      {
+        title: "Apa itu APA?",
+        icon: BookOpen,
+        desc: "APA (American Psychological Association) adalah gaya penulisan sitasi yang banyak digunakan di dunia akademik, terutama untuk bidang ilmu sosial. Aplikasi ini menggunakan format APA edisi ke-7.",
+        note: "Contoh format APA: Penulis, (Tahun). Judul Karya. Nama Institusi. URL",
+        details: [
+          "Gaya APA digunakan untuk sitasi dalam teks (in-text citation) dan daftar pustaka (references).",
+          "Format buku: Nama Belakang, A. (Tahun). Judul. Penerbit.",
+          "Format skripsi/tesis: Nama Belakang, A. (Tahun). Judul [Skripsi/Tesis]. Nama Universitas.",
+          "Aplikasi akan otomatis menghasilkan sitasi APA berdasarkan data yang diisi di form repository.",
+        ],
+      },
+      {
+        title: "Apa itu BibTeX?",
+        icon: FileText,
+        desc: "BibTeX adalah format file referensi yang digunakan bersama LaTeX untuk mengelola daftar pustaka. Format ini menyimpan metadata referensi (penulis, judul, tahun, dll) dalam format teks terstruktur.",
+        note: "Contoh entry BibTeX: @article{key, author = {Nama}, title = {Judul}, year = {2024} }",
+        details: [
+          "BibTeX banyak digunakan di dunia akademik untuk penulisan makalah, jurnal, dan disertasi.",
+          "Format @article untuk jurnal, @book untuk buku, @mastersthesis untuk tesis/skripsi.",
+          "Aplikasi menyediakan tombol 'Salin BibTeX' di halaman detail repository.",
+          "Dosen dan mahasiswa bisa langsung menggunakan output BibTeX untuk referensi di dokumen LaTeX.",
+        ],
+      },
+      {
+        title: "Cara Menggunakan Fitur Sitasi",
+        icon: Download,
+        desc: "Fitur sitasi tersedia di halaman detail repository publik. Klik tombol 'Salin Sitasi APA' atau 'Salin BibTeX' untuk menyalih format ke clipboard. Paste langsung ke dokumen Anda.",
+      },
+    ],
+  },
+  {
+    id: "recommendations",
+    title: "Rekomendasi Pengembangan",
+    icon: Lightbulb,
+    children: [
+      {
+        title: "Optimasi Kecepatan",
+        icon: Image,
+        desc: "Gunakan kompresi gambar sebelum upload. Manfaatkan format WebP. Setiap gambar > 1 MB akan memperlambat halaman. Saat ini ukuran maksimal upload diatur di backend (50 MB), sebaiknya diperkecil.",
+      },
+      {
+        title: "Notifikasi Real-time",
+        icon: Speaker,
+        desc: "Mahasiswa belum mendapat notifikasi saat karya direview dosen. Bisa ditambahkan fitur email notifikasi atau WhatsApp Gateway.",
+      },
+      {
+        title: "Multiple Reviewer",
+        icon: Users,
+        desc: "Saat ini hanya 1 dosen pembimbing per mahasiswa. Ke depannya bisa ditambahkan reviewer kedua (penguji) untuk proses review yang lebih ketat.",
+      },
+      {
+        title: "Plagiarism Checker Integration",
+        icon: Search,
+        desc: "Integrasi dengan API pengecekan plagiarisme akan sangat membantu dosen dalam menilai keaslian karya mahasiswa.",
+      },
+      {
+        title: "Backup & Restore Database",
+        icon: Save,
+        desc: "Sangat disarankan melakukan backup database secara berkala. Buat cron job untuk backup otomatis setiap minggu ke penyimpanan cloud.",
+      },
+      {
+        title: "Mobile App (PWA)",
+        icon: Globe,
+        desc: "Aktifkan Progressive Web App (PWA) agar website bisa diinstal sebagai aplikasi di HP. Ini relatif mudah dengan menambahkan service worker dan manifest.",
+      },
+    ],
+  },
 ];
 
 function CollapsibleCard({ title, icon: Icon, defaultOpen = false, children }: any) {
@@ -493,6 +600,13 @@ export default function PanduanPage() {
     <main className="px-4 sm:px-6 lg:px-8 py-6">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="bg-white shadow-md rounded-xl p-6 sm:p-8">
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-4">
+            <Link href="/dashboard" className="hover:text-sky-600 transition-colors">Dashboard</Link>
+            <ChevronRightIcon size={14} />
+            <span className="text-gray-600 font-medium">Panduan</span>
+          </nav>
+
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
             <div>
               <h1 className="text-3xl font-bold text-sky-700">Panduan Penggunaan Aplikasi</h1>

@@ -2,13 +2,11 @@
 
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, ElementType } from "react";
+import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import Link from "next/link";
 import useSWR from "swr";
 import {
-  Users, BookCopy, Newspaper, UserCircle, ShieldCheck, FileText,
-  GalleryVertical, Phone, Megaphone, Upload, Image as ImageIcon, Briefcase,
+  BookCopy, FileText, GraduationCap, Upload,
 } from "lucide-react";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
@@ -18,14 +16,6 @@ interface DecodedToken {
   name: string;
   userCode: string;
   exp: number;
-}
-
-interface DashboardCardProps {
-  href: string;
-  icon: ElementType;
-  title: string;
-  description: string;
-  colorClass: string;
 }
 
 interface Stats {
@@ -38,24 +28,23 @@ interface Stats {
   recentItems: { id: string; title: string; approvalStatus: string; createdAt: string; uploader: { name: string } }[];
 }
 
-const fetcher = (url: string) => fetch(url, {
-  headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
-}).then((r) => r.json());
-
-const DashboardCard = ({ href, icon: Icon, title, description, colorClass }: DashboardCardProps) => (
-  <Link href={href}
-    className="flex flex-col items-center justify-center p-6 bg-white rounded-xl border shadow hover:shadow-lg hover:border-blue-500 transition-all duration-300 transform hover:-translate-y-1">
-    <Icon className={`h-12 w-12 ${colorClass} mb-4`} />
-    <h2 className="text-lg font-semibold text-gray-800 text-center">{title}</h2>
-    <p className="text-sm text-gray-500 mt-1 text-center">{description}</p>
-  </Link>
-);
-
 function StatCard({ label, value, color }: { label: string; value: number | string; color: string }) {
   return (
-    <div className="bg-white rounded-xl border p-5 shadow-sm">
+    <div className="bg-white rounded-xl border p-5 shadow-sm hover:shadow-md transition-shadow">
       <p className="text-sm text-gray-500">{label}</p>
       <p className={`text-3xl font-bold mt-1 ${color}`}>{value}</p>
+    </div>
+  );
+}
+
+function MiniStat({ icon: Icon, label, value, color }: { icon: any; label: string; value: number | string; color: string }) {
+  return (
+    <div className="flex items-center gap-3 bg-white rounded-xl border p-4 shadow-sm">
+      <Icon className={`h-8 w-8 ${color}`} />
+      <div>
+        <p className="text-xs text-gray-500">{label}</p>
+        <p className="text-lg font-bold">{value}</p>
+      </div>
     </div>
   );
 }
@@ -66,10 +55,21 @@ export default function DashboardPage() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userName, setUserName] = useState("");
   const [userCode, setUserCode] = useState("");
+  const [userId, setUserId] = useState("");
 
   const { data: stats } = useSWR<Stats>(
     userRole === "ADMIN" ? `${process.env.NEXT_PUBLIC_API_URL}api/dashboard/stats` : null,
-    fetcher
+    (url: string) => fetch(url, { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json())
+  );
+
+  const { data: myRepo } = useSWR(
+    userRole === "MAHASISWA" ? `${process.env.NEXT_PUBLIC_API_URL}api/my-repository?userId=${userId}` : null,
+    (url: string) => fetch(url, { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json())
+  );
+
+  const { data: myStudents } = useSWR(
+    userRole === "DOSEN" ? `${process.env.NEXT_PUBLIC_API_URL}api/advisor/students` : null,
+    (url: string) => fetch(url, { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json())
   );
 
   useEffect(() => {
@@ -80,14 +80,14 @@ export default function DashboardPage() {
       setUserRole(decoded.role);
       setUserName(decoded.name);
       setUserCode(decoded.userCode);
+      setUserId(decoded.userId);
     } catch { logout(); router.replace("/login"); }
   }, [token, router, logout]);
 
   if (!userRole) return <div className="text-center py-20">Memuat dasbor...</div>;
 
   const maxCount = stats?.submissionsByMonth?.length
-    ? Math.max(...stats.submissionsByMonth.map((s) => s.count), 1)
-    : 1;
+    ? Math.max(...stats.submissionsByMonth.map((s) => s.count), 1) : 1;
 
   return (
     <main className="px-4 sm:px-6 lg:px-8 py-6">
@@ -96,13 +96,17 @@ export default function DashboardPage() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-800">Selamat Datang, {userName}!</h1>
             <div className="mt-2 flex flex-col sm:flex-row sm:items-center sm:gap-4 text-gray-600">
-              <p className="text-md">Login sebagai: <span className="font-semibold text-indigo-600">{userRole}</span></p>
+              <p className="text-md">
+                Login sebagai: <span className="font-semibold text-indigo-600">{userRole}</span>
+              </p>
               <span className="hidden sm:block">|</span>
-              <p className="text-md">Kode: <span className="font-semibold text-teal-600">{userCode}</span></p>
+              <p className="text-md">
+                Kode: <span className="font-semibold text-teal-600">{userCode}</span>
+              </p>
             </div>
           </div>
 
-          {/* STATISTIK — hanya untuk ADMIN */}
+          {/* ADMIN — full stats */}
           {userRole === "ADMIN" && stats && (
             <>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -187,36 +191,21 @@ export default function DashboardPage() {
 
           {userRole === "ADMIN" && !stats && <LoadingSpinner />}
 
-          {/* CARDS — shortcut ke modul */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-            {userRole === "ADMIN" && (
-              <>
-                <DashboardCard href="/dashboard/users/students" icon={Users} title="Kelola Mahasiswa" description="Atur data mahasiswa." colorClass="text-blue-600" />
-                <DashboardCard href="/dashboard/users/lecturers" icon={Briefcase} title="Kelola Dosen" description="Atur data dosen." colorClass="text-indigo-600" />
-                <DashboardCard href="/dashboard/users/admins" icon={ShieldCheck} title="Kelola Admin" description="Atur administrator." colorClass="text-red-600" />
-                <DashboardCard href="/dashboard/pages" icon={FileText} title="Kelola Halaman" description="Edit halaman statis." colorClass="text-cyan-600" />
-                <DashboardCard href="/dashboard/news" icon={Newspaper} title="Kelola Berita" description="Publikasikan artikel." colorClass="text-orange-600" />
-                <DashboardCard href="/dashboard/banners" icon={ImageIcon} title="Kelola Banner" description="Atur banner slider." colorClass="text-pink-600" />
-                <DashboardCard href="/dashboard/gallery" icon={GalleryVertical} title="Kelola Galeri" description="Atur koleksi foto." colorClass="text-pink-600" />
-                <DashboardCard href="/dashboard/announcements" icon={Megaphone} title="Kelola Pengumuman" description="Atur pop-up." colorClass="text-amber-600" />
-                <DashboardCard href="/dashboard/menu" icon={ImageIcon} title="Kelola Menu" description="Atur navigasi." colorClass="text-purple-600" />
-                <DashboardCard href="/dashboard/contact" icon={Phone} title="Kelola Kontak" description="Info kontak kampus." colorClass="text-lime-600" />
-                <DashboardCard href="/dashboard/repository" icon={BookCopy} title="Kelola Repository" description="Atur karya ilmiah." colorClass="text-green-600" />
-              </>
-            )}
-            {userRole === "MAHASISWA" && (
-              <>
-                <DashboardCard href="/dashboard/my-repository" icon={Upload} title="Repository Saya" description="Unggah & kelola karya." colorClass="text-sky-600" />
-                <DashboardCard href="/dashboard/profile" icon={UserCircle} title="Profil Saya" description="Lihat info & ganti password." colorClass="text-teal-600" />
-              </>
-            )}
-            {userRole === "DOSEN" && (
-              <>
-                <DashboardCard href="/dashboard/advising" icon={Briefcase} title="Bimbingan Saya" description="Review karya ilmiah." colorClass="text-indigo-600" />
-                <DashboardCard href="/dashboard/profile" icon={UserCircle} title="Profil Saya" description="Lihat info & ganti password." colorClass="text-teal-600" />
-              </>
-            )}
-          </div>
+          {/* MAHASISWA — mini stats */}
+          {userRole === "MAHASISWA" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <MiniStat icon={Upload} label="Repository Saya" value={myRepo?.length || 0} color="text-sky-600" />
+              <MiniStat icon={FileText} label="Disetujui" value={myRepo?.filter((r: any) => r.approvalStatus === "APPROVED")?.length || 0} color="text-green-600" />
+            </div>
+          )}
+
+          {/* DOSEN — mini stats */}
+          {userRole === "DOSEN" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <MiniStat icon={GraduationCap} label="Mahasiswa Bimbingan" value={myStudents?.length || 0} color="text-indigo-600" />
+              <MiniStat icon={BookCopy} label="Perlu Review" value={myStudents?.filter((s: any) => s._count?.repositoryItems > 0)?.length || 0} color="text-amber-600" />
+            </div>
+          )}
         </div>
       </div>
     </main>

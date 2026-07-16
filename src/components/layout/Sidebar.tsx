@@ -129,67 +129,20 @@ export default function Sidebar() {
         {/* User Info */}
         <div className="px-4 py-3 border-b bg-sky-50">
           <p className="font-semibold text-sky-700 truncate">{name}</p>
-          <p className="text-xs text-gray-600 break-words">{email}</p>
-          <p className="text-xs text-gray-500 mt-1">Kode: {userCode}</p>
+          <p className="text-xs text-gray-500 truncate">{email}</p>
+          <p className="text-xs text-gray-400">Kode: {userCode}</p>
 
-          {/* Logout */}
-          <div className="pt-4">
-            <button
-              onClick={logout}
-              className="
-      group relative flex items-center justify-between gap-2
-      w-full max-w-[200px]
-      px-4 py-2
-      bg-white text-black
-      border border-black rounded-xl
-      shadow-[3px_3px_0px_#000]
-      transition-all duration-300 ease-in-out
-      hover:shadow-[1px_1px_0px_#000]
-      hover:translate-x-[1px] hover:translate-y-[1px]
-      active:scale-[0.97]
-      overflow-hidden
-    "
-            >
-              {/* Background hover effect */}
-              <div
-                className="
-        absolute inset-0 bg-red-500 z-[-1]
-        transform -translate-x-full
-        transition-transform duration-300 ease-in-out
-        group-hover:translate-x-0
-      "
-              />
-
-              {/* Text */}
-              <span
-                className="
-        relative text-sm font-semibold
-        transition-all duration-300 ease-in-out
-        group-hover:text-white
-      "
-              >
-                Logout
-              </span>
-
-              {/* Icon */}
-              <div
-                className="
-        relative flex items-center justify-center
-        w-7 h-7
-        rounded-full border border-black bg-gray-100
-        transition-all duration-300 ease-in-out
-        group-hover:translate-x-[2px]
-        group-hover:bg-red-500
-      "
-              >
-                <LogOut className="h-4 w-4 text-black transition-colors duration-300 group-hover:text-white" />
-              </div>
-            </button>
-          </div>
+          <button
+            onClick={logout}
+            className="mt-3 flex items-center justify-center gap-2 w-full px-3 py-2 text-sm font-medium text-red-600 bg-white border border-red-200 rounded-lg hover:bg-red-50 hover:border-red-300 transition-colors"
+          >
+            <LogOut size={15} />
+            Logout
+          </button>
         </div>
 
         {/* Nav Menu */}
-        <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1 bg-white">
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5 bg-white">
           {navItems[role].map((item) => {
             const Icon = item.icon;
             const isActive = pathname.startsWith(item.href);
@@ -200,14 +153,14 @@ export default function Sidebar() {
                 href={item.href}
                 onClick={() => setIsOpen(false)}
                 className={clsx(
-                  "flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
                   isActive
-                    ? "bg-sky-100 text-sky-700 font-semibold border-l-4 border-sky-600"
-                    : "text-gray-600 hover:bg-sky-50"
+                    ? "bg-gradient-to-r from-sky-50 to-white text-sky-700 shadow-sm border-l-[3px] border-sky-600 ml-0"
+                    : "text-gray-600 hover:bg-sky-50 hover:text-sky-600 border-l-[3px] border-transparent ml-0"
                 )}
               >
-                <Icon className="h-5 w-5" />
-                {item.label}
+                <Icon className={clsx("h-4.5 w-4.5", isActive ? "text-sky-600" : "text-gray-400")} />
+                <span>{item.label}</span>
               </Link>
             );
           })}

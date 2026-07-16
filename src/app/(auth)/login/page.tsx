@@ -73,15 +73,28 @@ export default function LoginPage() {
         </div>
       )}
 
-      {/* LEFT SIDE IMAGE */}
-      <div className="hidden md:flex w-1/2 bg-white items-center justify-center border-r border-red-200">
-        <Image
-          src="/illustration-login.png"
-          alt="Ilustrasi Login"
-          width={450}
-          height={450}
-          priority
-        />
+      {/* LEFT SIDE ILLUSTRATION */}
+      <div className="hidden md:flex w-1/2 bg-gradient-to-br from-sky-50 via-white to-blue-50 items-center justify-center border-r border-sky-100 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 25% 25%, #0284c7 0%, transparent 50%), radial-gradient(circle at 75% 75%, #0ea5e9 0%, transparent 50%)' }} />
+        <div className="relative text-center px-8">
+          <Image
+            src="/logo-stisip-1.png"
+            alt="Logo STISIP"
+            width={120}
+            height={120}
+            className="mx-auto mb-6"
+            priority
+          />
+          <h1 className="text-3xl font-bold text-sky-800 mb-3">STISIP Syamsul Ulum</h1>
+          <p className="text-sky-600 text-lg max-w-sm mx-auto leading-relaxed">
+            Sistem Repository & Dashboard Akademik
+          </p>
+          <div className="mt-8 flex justify-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '0s' }} />
+            <div className="w-2 h-2 rounded-full bg-sky-500 animate-bounce" style={{ animationDelay: '0.15s' }} />
+            <div className="w-2 h-2 rounded-full bg-sky-600 animate-bounce" style={{ animationDelay: '0.3s' }} />
+          </div>
+        </div>
       </div>
 
       {/* RIGHT FORM SECTION */}

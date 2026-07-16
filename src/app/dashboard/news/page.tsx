@@ -154,14 +154,14 @@ export default function NewsManagement() {
             </div>
 
             {/* Table */}
-            <div className="overflow-x-auto rounded-lg border border-gray-200">
-              <table className="min-w-full text-sm">
+            <div className="rounded-lg border border-gray-200">
+              <table className="w-full text-sm table-fixed">
                 <thead className="bg-sky-50 text-sky-700 text-left uppercase tracking-wide">
                   <tr>
-                    <th className="px-6 py-4 font-semibold">Judul</th>
-                    <th className="px-6 py-4 font-semibold">Tanggal</th>
-                    <th className="px-6 py-4 font-semibold">Status</th>
-                    <th className="px-6 py-4 font-semibold text-center">
+                    <th className="px-4 py-4 font-semibold w-[45%]">Judul</th>
+                    <th className="px-4 py-4 font-semibold w-[20%]">Tanggal</th>
+                    <th className="px-4 py-4 font-semibold w-[20%]">Status</th>
+                    <th className="px-4 py-4 font-semibold text-center w-[15%]">
                       Aksi
                     </th>
                   </tr>
@@ -176,21 +176,19 @@ export default function NewsManagement() {
                   ) : newsItems.length > 0 ? (
                     newsItems.map((item) => (
                       <tr key={item.id} className="hover:bg-gray-50 transition">
-                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                          {item.title}
+                        <td className="px-4 py-4 font-medium text-gray-900 max-w-0">
+                          <span className="block truncate" title={item.title}>
+                            {item.title}
+                          </span>
                         </td>
-                        <td className="px-6 py-4 text-gray-600 whitespace-nowrap">
+                        <td className="px-4 py-4 text-gray-600 text-sm">
                           {new Date(item.createdAt).toLocaleDateString(
                             "id-ID",
-                            {
-                              day: "2-digit",
-                              month: "long",
-                              year: "numeric",
-                            }
+                            { day: "numeric", month: "short", year: "numeric" }
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <label className="inline-flex items-center cursor-pointer">
+                        <td className="px-4 py-4">
+                          <label className="inline-flex items-center cursor-pointer gap-1.5">
                             <input
                               type="checkbox"
                               className="sr-only peer"
@@ -200,27 +198,27 @@ export default function NewsManagement() {
                                 togglePublish(item.id, item.isPublished)
                               }
                             />
-                            <div className="w-11 h-6 bg-gray-300 peer-checked:bg-green-500 rounded-full transition" />
-                            <span className="ml-2 text-sm">
-                              {item.isPublished ? "Diterbitkan" : "Draf"}
+                            <div className="w-9 h-5 bg-gray-300 peer-checked:bg-green-500 rounded-full transition shrink-0" />
+                            <span className={`text-xs font-medium ${item.isPublished ? 'text-green-600' : 'text-gray-500'}`}>
+                              {item.isPublished ? "Terbit" : "Draf"}
                             </span>
                           </label>
                         </td>
-                        <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <div className="inline-flex gap-2">
+                        <td className="px-4 py-4 text-center">
+                          <div className="flex justify-center gap-1">
                             <button
                               onClick={() => handleEdit(item.id)}
-                              className="p-2 text-sky-600 hover:bg-sky-100 rounded-md"
+                              className="p-1.5 text-sky-600 hover:bg-sky-100 rounded-md transition-colors"
                               title="Edit Berita"
                             >
-                              <Edit size={16} />
+                              <Edit size={15} />
                             </button>
                             <button
                               onClick={() => confirmDelete(item.id, item.title)}
-                              className="p-2 text-red-600 hover:bg-red-100 rounded-md"
+                              className="p-1.5 text-red-600 hover:bg-red-100 rounded-md transition-colors"
                               title="Hapus Berita"
                             >
-                              <Trash2 size={16} />
+                              <Trash2 size={15} />
                             </button>
                           </div>
                         </td>

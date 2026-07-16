@@ -14,14 +14,18 @@ export default function BackupPage() {
   const { token } = useAuthStore();
   const [isExporting, setIsExporting] = useState(false);
   const [selectedYear, setSelectedYear] = useState("");
+  const [format, setFormat] = useState("json");
   const [lastBackup, setLastBackup] = useState<string | null>(null);
 
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const params = selectedYear ? `?year=${selectedYear}` : "";
+      const params = new URLSearchParams();
+      params.set("format", format);
+      if (selectedYear) params.set("year", selectedYear);
+
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}api/backup/export${params}`,
+        `${process.env.NEXT_PUBLIC_API_URL}api/backup/export?${params}`,
         { headers: { Authorization: `Bearer ${token}` }, responseType: 'blob' }
       );
 
@@ -29,13 +33,13 @@ export default function BackupPage() {
       const link = document.createElement('a');
       link.href = url;
       const suffix = selectedYear ? `tahun-${selectedYear}` : new Date().toISOString().split('T')[0];
-      link.setAttribute('download', `stisipsu-backup-${suffix}.json`);
+      link.setAttribute('download', `stisipsu-backup-${suffix}.${format}`);
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
 
-      setLastBackup(`${selectedYear ? `Tahun ${selectedYear}` : "Semua data"} — ${new Date().toLocaleString('id-ID')}`);
+      setLastBackup(`${format.toUpperCase()} — ${selectedYear ? `Tahun ${selectedYear}` : "Semua data"} — ${new Date().toLocaleString('id-ID')}`);
     } catch (err) {
       alert('Gagal mengexport database.');
     } finally {
@@ -60,16 +64,15 @@ export default function BackupPage() {
             <div>
               <h1 className="text-2xl font-bold text-gray-800">Backup Database</h1>
               <p className="text-sm text-gray-500">
-                Ekspor data repository ke file JSON.
+                Ekspor data repository ke file yang bisa diunduh.
               </p>
             </div>
           </div>
 
-          <div className="p-6 bg-gray-50 rounded-lg border max-w-xl space-y-4">
+          <div className="p-6 bg-gray-50 rounded-lg border max-w-xl space-y-5">
+            {/* Tahun */}
             <div>
-              <p className="text-sm text-gray-600 mb-1">
-                <strong>Pilih Tahun:</strong>
-              </p>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Pilih Tahun</label>
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
@@ -82,6 +85,39 @@ export default function BackupPage() {
               </select>
             </div>
 
+            {/* Format */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Format File</label>
+              <div className="flex flex-wrap gap-3">
+                {[
+                  { value: "json", label: "JSON", desc: "Struktur data mentah" },
+                  { value: "sql", label: "SQL", desc: "Query INSERT untuk restore" },
+                  { value: "zip", label: "ZIP", desc: "JSON + SQL dalam satu file" },
+                ].map((f) => (
+                  <label
+                    key={f.value}
+                    className={`flex-1 min-w-[120px] p-3 rounded-lg border-2 cursor-pointer transition ${
+                      format === f.value
+                        ? "border-sky-500 bg-sky-50"
+                        : "border-gray-200 bg-white hover:border-gray-300"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="format"
+                      value={f.value}
+                      checked={format === f.value}
+                      onChange={() => setFormat(f.value)}
+                      className="sr-only"
+                    />
+                    <p className="text-sm font-semibold text-gray-800">{f.label}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{f.desc}</p>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Warning */}
             <div className="bg-amber-50 border border-amber-200 rounded p-3 flex items-start gap-2">
               <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
               <p className="text-xs text-amber-800">
@@ -105,7 +141,7 @@ export default function BackupPage() {
               ) : (
                 <Download size={18} />
               )}
-              {isExporting ? "Mengexport..." : `Export${selectedYear ? ` Tahun ${selectedYear}` : " Semua Data"}`}
+              {isExporting ? "Mengexport..." : `Export ${format.toUpperCase()}${selectedYear ? ` (${selectedYear})` : ""}`}
             </button>
           </div>
         </div>

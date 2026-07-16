@@ -29,6 +29,7 @@ import {
   UserCog,
   Users,
 } from "lucide-react";
+import NotificationBell from "@/components/notifications/NotificationBell";
 import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import ImageNext from "next/image";
@@ -194,7 +195,10 @@ export default function Sidebar() {
         {/* User Info */}
         {!collapsed && (
           <div className="px-4 py-3 border-b bg-sky-50">
-            <p className="font-semibold text-sky-700 truncate text-sm">{name}</p>
+            <div className="flex items-center justify-between">
+              <p className="font-semibold text-sky-700 truncate text-sm">{name}</p>
+              <NotificationBell />
+            </div>
             <p className="text-xs text-gray-500 truncate">{email}</p>
             <p className="text-xs text-gray-400">Kode: {userCode}</p>
             <button
@@ -264,9 +268,12 @@ export default function Sidebar() {
           ))}
         </nav>
 
-        {/* Collapsed Logout */}
+        {/* Collapsed Notif + Logout */}
         {collapsed && (
-          <div className="border-t p-2">
+          <div className="border-t p-2 space-y-1">
+            <div className="flex justify-center">
+              <NotificationBell />
+            </div>
             <button
               onClick={logout}
               className="flex items-center justify-center w-full p-2.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"

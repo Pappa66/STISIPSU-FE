@@ -15,6 +15,7 @@ export default function BackupPage() {
   const [isExporting, setIsExporting] = useState(false);
   const [selectedYear, setSelectedYear] = useState("");
   const [format, setFormat] = useState("json");
+  const [includeFiles, setIncludeFiles] = useState(false);
   const [lastBackup, setLastBackup] = useState<string | null>(null);
 
   const handleExport = async () => {
@@ -23,6 +24,7 @@ export default function BackupPage() {
       const params = new URLSearchParams();
       params.set("format", format);
       if (selectedYear) params.set("year", selectedYear);
+      if (includeFiles) params.set("files", "true");
 
       const res = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}api/backup/export?${params}`,
@@ -117,11 +119,38 @@ export default function BackupPage() {
               </div>
             </div>
 
+            {/* Termasuk File */}
+            {format === "zip" && (
+              <label className="flex items-start gap-3 p-3 bg-white border rounded-lg cursor-pointer hover:bg-gray-50">
+                <input
+                  type="checkbox"
+                  checked={includeFiles}
+                  onChange={(e) => setIncludeFiles(e.target.checked)}
+                  className="mt-0.5"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">Sertakan file (gambar, PDF, dll)</p>
+                  <p className="text-xs text-gray-500">Unduh semua file dari Supabase storage. Proses lebih lama tergantung jumlah file.</p>
+                </div>
+              </label>
+            )}
+
+            {/* Info konten backup */}
+            <div className="bg-blue-50 border border-blue-200 rounded p-3 text-xs text-blue-800 space-y-1">
+              <p><strong>Data yang dibackup:</strong></p>
+              <ul className="list-disc list-inside">
+                <li>Database: user, repository, menu, halaman, berita, banner, galeri, dll.</li>
+                <li>Hanya repository yang difilter berdasarkan tahun (jika dipilih).</li>
+                {format === "zip" && includeFiles && <li>Semua file (PDF, gambar) dari Supabase storage.</li>}
+                {format !== "zip" || !includeFiles ? <li>File (gambar/PDF) tidak termasuk — hanya URL-nya.</li> : null}
+              </ul>
+            </div>
+
             {/* Warning */}
             <div className="bg-amber-50 border border-amber-200 rounded p-3 flex items-start gap-2">
               <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
               <p className="text-xs text-amber-800">
-                <strong>Saran:</strong> Lakukan backup per tahun agar ukuran file tetap kecil dan data lebih terorganisir. Backup semua data hanya jika diperlukan (misalnya sebelum migrasi server).
+                <strong>Saran:</strong> Lakukan backup per tahun agar ukuran file tetap kecil. Sertakan file hanya jika benar-benar perlu (misalnya sebelum migrasi server).
               </p>
             </div>
 

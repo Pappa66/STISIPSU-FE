@@ -160,11 +160,12 @@ export default function MenuManagementPage() {
     setShowCreateModal(true);
   };
 
-  const handleSubmitCreate = async (name: string) => {
+  const handleSubmitCreate = async (name: string, icon?: string) => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}api/${
       isSubmenu ? "submenus" : "menu-items"
     }`;
     const body: any = { name };
+    if (icon) body.icon = icon;
     if (isSubmenu && parentId) body.menuItemId = parentId;
 
     try {

@@ -10,6 +10,7 @@ import { ArrowLeft } from "lucide-react";
 import useSWR from "swr";
 import { fetchWithAuth } from "@/utils/api";
 import toast from "react-hot-toast";
+import { DynamicIcon, commonIconNames } from "@/lib/iconMap";
 
 // Fetcher untuk SWR
 const fetcher = (url: string) =>
@@ -28,6 +29,7 @@ export default function EditMenuPage() {
   const [name, setName] = useState("");
   const [type, setType] = useState<MenuType>("INTERNAL");
   const [href, setHref] = useState("");
+  const [icon, setIcon] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Gunakan SWR untuk mengambil data awal
@@ -44,6 +46,7 @@ export default function EditMenuPage() {
       setName(menuItem.name);
       setType(menuItem.type || "INTERNAL");
       setHref(menuItem.href || "");
+      setIcon((menuItem as any).icon || "");
     }
   }, [menuItem]);
 
@@ -58,6 +61,7 @@ export default function EditMenuPage() {
       type,
       href: type === "EXTERNAL" || type === "STATIC_PATH" ? href : null,
       postId: type === "INTERNAL" ? (menuItem as any).post?.id || null : undefined,
+      icon: icon || null,
     };
 
     // Perbaikan URL API
@@ -202,6 +206,35 @@ export default function EditMenuPage() {
                     required
                     className="w-full mt-1 px-3 py-2 border rounded-md bg-background"
                   />
+                </div>
+              )}
+              {type === "INTERNAL" && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Ikon Menu (opsional)
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {commonIconNames.map((iconName) => (
+                      <button
+                        key={iconName}
+                        type="button"
+                        onClick={() => setIcon(icon === iconName ? "" : iconName)}
+                        className={`p-2 rounded-lg border transition-all ${
+                          icon === iconName
+                            ? "border-sky-500 bg-sky-50 text-sky-600 ring-2 ring-sky-200"
+                            : "border-gray-200 hover:border-gray-300 text-gray-500 hover:text-gray-700"
+                        }`}
+                        title={iconName}
+                      >
+                        <DynamicIcon name={iconName} className="w-5 h-5" />
+                      </button>
+                    ))}
+                  </div>
+                  {icon && (
+                    <p className="text-xs text-gray-400 mt-2">
+                      Ikon: <span className="text-sky-600 font-mono">{icon}</span>
+                    </p>
+                  )}
                 </div>
               )}
             </div>

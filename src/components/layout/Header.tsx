@@ -24,6 +24,7 @@ import {
   Search,
   ChevronUp,
 } from "lucide-react";
+import { DynamicIcon } from "@/lib/iconMap";
 
 export default function Header() {
   const pathname = usePathname();
@@ -110,7 +111,10 @@ useEffect(() => {
             onClick={() => handleMobileSubmenuToggle(item.id)}
             className={clsx(commonClasses, "w-full justify-between")}
           >
-            <span>{item.name}</span>
+            <span className="flex items-center gap-2">
+              <DynamicIcon name={item.icon} className="w-4 h-4" />
+              {item.name}
+            </span>
             {openMobileSubmenu === item.id ? (
               <ChevronUp size={16} />
             ) : (
@@ -125,7 +129,10 @@ useEffect(() => {
           onClick={() => setOpenMenu(isOpen ? null : item.id)}
           className={clsx(commonClasses, "cursor-pointer")}
         >
-          <span>{item.name}</span>
+          <span className="flex items-center gap-2">
+            <DynamicIcon name={item.icon} className="w-4 h-4" />
+            {item.name}
+          </span>
           {isOpen ? (
             <ChevronUp size={16} className="text-white" />
           ) : (
@@ -147,6 +154,13 @@ useEffect(() => {
       typeof item.href === "string" &&
       (item.href.startsWith("http://") || item.href.startsWith("https://"));
 
+    const nameSpan = (
+      <span className="flex items-center gap-2">
+        <DynamicIcon name={item.icon} className="w-4 h-4 shrink-0" />
+        {item.name}
+      </span>
+    );
+
     if (isExternalUrl) {
       return (
         <a
@@ -158,8 +172,8 @@ useEffect(() => {
             if (isMobile) setMobileMenuOpen(false);
           }}
         >
-          {item.name}
-          <ExternalLink size={14} className="ml-1" />
+          {nameSpan}
+          <ExternalLink size={14} className="ml-1 shrink-0" />
         </a>
       );
     }
@@ -179,7 +193,7 @@ useEffect(() => {
           if (isMobile) setMobileMenuOpen(false);
         }}
       >
-        {item.name}
+        {nameSpan}
       </Link>
     );
   };

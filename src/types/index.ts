@@ -18,6 +18,7 @@ export interface SubMenuItem {
   order: number;
   type: MenuType;
   href: string | null;
+  icon: string | null;
   post: PostInfo | null; // Gunakan tipe PostInfo yang baru
   postId: string | null;
   menuItemId: string;
@@ -29,6 +30,7 @@ export interface NavItem {
   order: number;
   type: MenuType;
   href: string | null;
+  icon: string | null;
   post: PostInfo | null; // Gunakan tipe PostInfo yang baru
   postId: string | null;
   submenus: SubMenuItem[];

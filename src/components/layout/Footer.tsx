@@ -1,13 +1,27 @@
-// src/components/layout/Footer.tsx
+"use client";
+
 import React from "react";
 import Link from "next/link";
-import { ExternalLink, MapPin, Phone, Mail, Globe } from "lucide-react";
+import { ExternalLink, MapPin, Phone, Mail } from "lucide-react";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export default function Footer() {
+  const { data: footerData } = useSWR<FooterLinks>(
+    `${process.env.NEXT_PUBLIC_API_URL}api/public/footer-links`,
+    fetcher
+  );
+  const { data: kontak } = useSWR<ContactInfo>(
+    `${process.env.NEXT_PUBLIC_API_URL}api/public/contact/info`,
+    fetcher
+  );
+
+  const dynamicSections = footerData?.sections || [];
+
   return (
     <footer className="bg-[#1f2937] text-gray-300 border-t-4 border-blue-500">
       <div className="container mx-auto px-4 py-8 lg:py-12">
-        {/* Main Footer Content */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {/* Program Studi */}
           <div className="space-y-4">
@@ -43,7 +57,7 @@ export default function Footer() {
                 Biro Kemahasiswaan dan Alumni
               </li>
               <li className="hover:text-blue-300 transition-colors cursor-pointer">
-                Lembaga Penelitian dan Pengabdian kepada Masyarakat (LPPM)
+                LPPM
               </li>
               <li className="hover:text-blue-300 transition-colors cursor-pointer">
                 UPT Teknologi Informasi
@@ -75,112 +89,62 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Tautan Lainnya */}
-          <div className="space-y-4">
-            <h3 className="text-white font-semibold bg-blue-600 inline-block px-3 py-1 rounded text-sm lg:text-base">
-              Tautan Lainnya
-            </h3>
-            <ul className="space-y-2 text-sm lg:text-base">
-              <li>
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 hover:text-blue-300 transition-colors group"
-                >
-                  Sistem Informasi Akademik (SIAK)
-                  <ExternalLink
-                    size={14}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 hover:text-blue-300 transition-colors group"
-                >
-                  Webmail Dosen & Staff
-                  <ExternalLink
-                    size={14}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 hover:text-blue-300 transition-colors group"
-                >
-                  PMB Online
-                  <ExternalLink
-                    size={14}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 hover:text-blue-300 transition-colors group"
-                >
-                  E-Complaint Mahasiswa
-                  <ExternalLink
-                    size={14}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 hover:text-blue-300 transition-colors group"
-                >
-                  Tracer Study Alumni
-                  <ExternalLink
-                    size={14}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 hover:text-blue-300 transition-colors group"
-                >
-                  LMS STISIP (E-Learning)
-                  <ExternalLink
-                    size={14}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 hover:text-blue-300 transition-colors group"
-                >
-                  Helpdesk & ICT
-                  <ExternalLink
-                    size={14}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  />
-                </a>
-              </li>
-            </ul>
-          </div>
+          {/* Dynamic Tautan / Contact */}
+          {dynamicSections.length > 0 ? (
+            dynamicSections.map((section) => (
+              <div key={section.title} className="space-y-4">
+                <h3 className="text-white font-semibold bg-blue-600 inline-block px-3 py-1 rounded text-sm lg:text-base">
+                  {section.title}
+                </h3>
+                <ul className="space-y-2 text-sm lg:text-base">
+                  {section.links.map((link) => (
+                    <li key={link.label}>
+                      <a
+                        href={link.url || "#"}
+                        target={link.isExternal ? "_blank" : "_self"}
+                        rel={link.isExternal ? "noopener noreferrer" : undefined}
+                        className="flex items-center gap-2 hover:text-blue-300 transition-colors group"
+                      >
+                        {link.label}
+                        {link.isExternal && (
+                          <ExternalLink
+                            size={14}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                          />
+                        )}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          ) : (
+            <div className="space-y-4">
+              <h3 className="text-white font-semibold bg-blue-600 inline-block px-3 py-1 rounded text-sm lg:text-base">
+                Kontak
+              </h3>
+              <ul className="space-y-2 text-sm lg:text-base">
+                {kontak?.alamat && (
+                  <li className="flex items-start gap-2">
+                    <MapPin size={16} className="mt-0.5 shrink-0" />
+                    <span>{kontak.alamat}</span>
+                  </li>
+                )}
+                {kontak?.telepon && (
+                  <li className="flex items-center gap-2">
+                    <Phone size={16} className="shrink-0" />
+                    <span>{kontak.telepon}</span>
+                  </li>
+                )}
+                {kontak?.email && (
+                  <li className="flex items-center gap-2">
+                    <Mail size={16} className="shrink-0" />
+                    <span>{kontak.email}</span>
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* Bottom Copyright */}
@@ -200,4 +164,26 @@ export default function Footer() {
       </div>
     </footer>
   );
+}
+
+interface FooterLink {
+  label: string;
+  url: string;
+  isExternal?: boolean;
+}
+
+interface FooterSection {
+  title: string;
+  links: FooterLink[];
+}
+
+interface FooterLinks {
+  sections: FooterSection[];
+}
+
+interface ContactInfo {
+  alamat: string;
+  email: string;
+  telepon: string;
+  link_google_maps?: string;
 }

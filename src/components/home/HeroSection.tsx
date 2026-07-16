@@ -3,78 +3,13 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import OptimizedImage, { Img } from '@/components/common/OptimizedImage';
+import OptimizedImage from '@/components/common/OptimizedImage';
 import AnimatedSection from '@/components/common/AnimatedSection';
-import { buildImageUrl } from '@/utils/image';
-import { ArrowRight, User, Calendar } from "lucide-react";
+import { User, Calendar } from "lucide-react";
 import useSWR from "swr";
 import BannerSlider from "./BannerSlider";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-function splitBlocks(blocks: Block[]) {
-  const textTypes = [
-    "paragraph",
-    "html",
-    "table",
-    "list",
-    "tasklist",
-    "heading",
-  ];
-  const mediaTypes = ["image", "video", "youtube"];
-
-  const textBlocks = blocks.filter((b) => textTypes.includes(b.type));
-  const mediaBlocks = blocks.filter((b) => mediaTypes.includes(b.type));
-
-  return { textBlocks, mediaBlocks };
-}
-
-
-
-function IntroSection() {
-  const postId = "cmrlfbop40001l904ds38tmu6";
-  const { data: post, isLoading } = useSWR<PostData>(
-    postId ? `${process.env.NEXT_PUBLIC_API_URL}api/posts/${postId}` : null,
-    fetcher
-  );
-
-  return (
-    <section className="bg-gray-50 py-12 px-4">
-      <div className="container mx-auto">
-        {isLoading && <p>Memuat konten pengantar...</p>}
-
-        {post?.blocks ? (
-          (() => {
-            const { textBlocks, mediaBlocks } = splitBlocks(post.blocks);
-            return (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                {/* LEFT: Media Blocks (Gambar) */}
-                <div>
-                  {mediaBlocks.length === 0 ? (
-                    <p className="text-gray-500">Tidak ada gambar.</p>
-                  ) : (
-                    mediaBlocks.map((block) => (
-                      <BlockRenderer key={block.id} block={block} />
-                    ))
-                  )}
-                </div>
-
-                {/* RIGHT: Text Blocks */}
-                <div className="prose max-w-none text-gray-800">
-                  {textBlocks.map((block) => (
-                    <BlockRenderer key={block.id} block={block} />
-                  ))}
-                </div>
-              </div>
-            );
-          })()
-        ) : (
-          <p className="text-gray-500">Tidak ada konten pengantar.</p>
-        )}
-      </div>
-    </section>
-  );
-}
 
 export default function HeroSection() {
   const { data: berita, isLoading: beritaLoading } = useSWR<{
@@ -89,8 +24,6 @@ export default function HeroSection() {
   return (
     <>
       <BannerSlider />
-
-      <IntroSection />
 
       <section className="bg-[#0077c2] text-white py-5 px-4">
   <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-2 items-center">
@@ -247,86 +180,6 @@ export default function HeroSection() {
       </AnimatedSection>
     </>
   );
-}
-
-function BlockRenderer({ block }: { block: Block }) {
-  switch (block.type) {
-    case "heading":
-      return (
-        <h2 className="text-2xl font-bold text-sky-700 my-4">
-          {block.content}
-        </h2>
-      );
-
-    case "paragraph":
-    case "html":
-    case "table":
-    case "list":
-    case "tasklist":
-      return (
-        <div
-          className="prose max-w-none text-gray-800 leading-relaxed my-4"
-          dangerouslySetInnerHTML={{ __html: block.content }}
-        />
-      );
-
-    case "image":
-      return (
-        <figure className="my-6">
-          <Img
-            src={block.url}
-            alt={block.url}
-            className="w-full rounded-lg shadow-md"
-          />
-        </figure>
-      );
-
-    case "video":
-      return (
-        <video
-          src={buildImageUrl(block.url)}
-          controls
-          className="w-full my-6 rounded-lg shadow-md"
-        ></video>
-      );
-
-    case "youtube":
-      const videoId =
-        block.url.split("v=")[1]?.split("&")[0] || block.url.split("/").pop();
-      if (!videoId) return null;
-      return (
-        <iframe
-          src={`https://www.youtube.com/embed/${videoId}`} // Perbaikan di sini: URL embed YouTube yang benar
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="w-full aspect-video my-6 rounded-lg shadow-md"
-        ></iframe>
-      );
-
-    default:
-      return null;
-  }
-}
-
-/** Types **/
-type Block =
-  | { id: string; type: "heading"; content: string }
-  | { id: string; type: "paragraph"; content: string }
-  | { id: string; type: "html"; content: string }
-  | { id: string; type: "image"; url: string }
-  | { id: string; type: "video"; url: string }
-  | { id: string; type: "youtube"; url: string }
-  | { id: string; type: "table"; content: string }
-  | { id: string; type: "list"; content: string }
-  | { id: string; type: "tasklist"; content: string };
-
-interface PostData {
-  id: string;
-  title: string;
-  blocks: Block[] | null;
-  createdAt: string;
 }
 
 interface NewsItem {

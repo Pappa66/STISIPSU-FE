@@ -383,38 +383,31 @@ const sections = [
   },
   {
     id: "recommendations",
-    title: "Rekomendasi Pengembangan",
+    title: "Rekomendasi & Rencana Pengembangan",
     icon: Lightbulb,
     children: [
       {
-        title: "Optimasi Kecepatan",
-        icon: Image,
-        desc: "Gunakan kompresi gambar sebelum upload. Manfaatkan format WebP. Setiap gambar > 1 MB akan memperlambat halaman. Saat ini ukuran maksimal upload diatur di backend (50 MB), sebaiknya diperkecil.",
+        title: "✅ Sudah Tersedia",
+        icon: CheckCircle,
+        desc: "",
+        items: [
+          "Kompresi gambar otomatis saat upload (WebP, ukuran dioptimalkan).",
+          "Menu navigasi publik bisa diberi ikon melalui menu Manajemen Menu.",
+          "Footer dinamis yang bisa diatur dari dashboard.",
+          "Sidebar admin bisa di-collapse/hide.",
+          "Pencarian publik mencakup judul, konten (blocks), tag, repository, dan galeri.",
+        ],
       },
       {
-        title: "Notifikasi Real-time",
-        icon: Speaker,
-        desc: "Mahasiswa belum mendapat notifikasi saat karya direview dosen. Bisa ditambahkan fitur email notifikasi atau WhatsApp Gateway.",
-      },
-      {
-        title: "Multiple Reviewer",
-        icon: Users,
-        desc: "Saat ini hanya 1 dosen pembimbing per mahasiswa. Ke depannya bisa ditambahkan reviewer kedua (penguji) untuk proses review yang lebih ketat.",
-      },
-      {
-        title: "Plagiarism Checker Integration",
-        icon: Search,
-        desc: "Integrasi dengan API pengecekan plagiarisme akan sangat membantu dosen dalam menilai keaslian karya mahasiswa.",
-      },
-      {
-        title: "Backup & Restore Database",
-        icon: Save,
-        desc: "Sangat disarankan melakukan backup database secara berkala. Buat cron job untuk backup otomatis setiap minggu ke penyimpanan cloud.",
-      },
-      {
-        title: "Mobile App (PWA)",
-        icon: Globe,
-        desc: "Aktifkan Progressive Web App (PWA) agar website bisa diinstal sebagai aplikasi di HP. Ini relatif mudah dengan menambahkan service worker dan manifest.",
+        title: "⏳ Rencana Pengembangan Selanjutnya",
+        icon: Clock,
+        desc: "Fitur-fitur berikut direncanakan untuk pengembangan ke depan:",
+        items: [
+          "Notifikasi In-App — Mahasiswa mendapat notifikasi (bell icon) saat karya direview, tanpa perlu SMTP/API eksternal. Alternatif gratis jika butuh email: Gmail SMTP (App Password), SendGrid (100/hari), Brevo (300/hari), atau Resend (100/hari).",
+          "Multiple Reviewer — Dosen pembimbing + penguji untuk proses review dua tahap.",
+          "Plagiarism Checker — Integrasi API pengecekan plagiarisme (bisa pakai PlagiarismChecker.net atau Turnitin API).",
+          "Backup Database Otomatis — Cron job mingguan ke cloud storage (Google Drive, Dropbox, atau S3).",
+        ],
       },
     ],
   },
@@ -532,6 +525,19 @@ function GuideSection({ section }: any) {
                         <li key={j} className="flex items-start gap-2">
                           <div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2 shrink-0" />
                           {a}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {child.items && (
+                  <div>
+                    <ul className="space-y-2">
+                      {child.items.map((item: string, j: number) => (
+                        <li key={j} className="flex items-start gap-2 text-sm text-gray-600">
+                          <div className="w-1.5 h-1.5 rounded-full bg-sky-500 mt-2 shrink-0" />
+                          {item}
                         </li>
                       ))}
                     </ul>

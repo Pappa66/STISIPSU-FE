@@ -135,15 +135,53 @@ export default function BackupPage() {
               </label>
             )}
 
-            {/* Info konten backup */}
-            <div className="bg-blue-50 border border-blue-200 rounded p-3 text-xs text-blue-800 space-y-1">
-              <p><strong>Data yang dibackup:</strong></p>
-              <ul className="list-disc list-inside">
-                <li>Database: user, repository, menu, halaman, berita, banner, galeri, dll.</li>
-                <li>Hanya repository yang difilter berdasarkan tahun (jika dipilih).</li>
-                {format === "zip" && includeFiles && <li>Semua file (PDF, gambar) dari Supabase storage.</li>}
-                {format !== "zip" || !includeFiles ? <li>File (gambar/PDF) tidak termasuk — hanya URL-nya.</li> : null}
-              </ul>
+            {/* Detail isi per format */}
+            <div className="bg-blue-50 border border-blue-200 rounded p-3 text-xs text-blue-800 space-y-2">
+              <p className="font-semibold">Detail isi backup:</p>
+
+              {format !== "zip" && (
+                <div>
+                  <p className="font-medium">📄 {format.toUpperCase()} — Hanya data tabel:</p>
+                  <ul className="list-disc list-inside ml-1 mt-0.5 space-y-0.5">
+                    <li><strong>user</strong> — semua akun (Admin, Dosen, Mahasiswa), prodi, NPM, NPD</li>
+                    <li><strong>repositoryItem + fileItem</strong> — karya ilmiah, status approval, metadata file</li>
+                    <li><strong>post</strong> — halaman, berita, konten (blocks), tags, slug</li>
+                    <li><strong>menuItem + subMenuItem</strong> — navigasi publik + icon</li>
+                    <li><strong>banner + galleryImage</strong> — banner slider, galeri foto</li>
+                    <li><strong>announcement</strong> — pengumuman pop-up</li>
+                    <li><strong>bimbingan + notification</strong> — relasi dosen-mahasiswa, notifikasi</li>
+                    <li><strong>setting</strong> — pengaturan kontak</li>
+                  </ul>
+                  <p className="mt-1 text-blue-600">❌ File asli (PDF, gambar) tidak ikut — hanya URL penyimpanannya.</p>
+                </div>
+              )}
+
+              {format === "zip" && !includeFiles && (
+                <div>
+                  <p className="font-medium">📦 ZIP — Data tabel (JSON + SQL) dalam satu file:</p>
+                  <ul className="list-disc list-inside ml-1 mt-0.5 space-y-0.5">
+                    <li><strong>backup-xxxx.json</strong> — data tabel (sama seperti format JSON)</li>
+                    <li><strong>backup-xxxx.sql</strong> — query INSERT untuk restore langsung ke database</li>
+                  </ul>
+                  <p className="mt-1 text-blue-600">❌ File asli tidak ikut. Centang <strong>"Sertakan file"</strong> untuk mengunduh file.</p>
+                </div>
+              )}
+
+              {format === "zip" && includeFiles && (
+                <div>
+                  <p className="font-medium">📦 ZIP — Data tabel + file asli:</p>
+                  <ul className="list-disc list-inside ml-1 mt-0.5 space-y-0.5">
+                    <li><strong>backup-xxxx.json</strong> — data tabel</li>
+                    <li><strong>backup-xxxx.sql</strong> — query INSERT</li>
+                    <li><strong>file_manifest.json</strong> — daftar semua file yang berhasil/gagal diunduh</li>
+                    <li><strong>files/repository/*.pdf</strong> — file karya ilmiah</li>
+                    <li><strong>files/gallery/*</strong> — gambar galeri</li>
+                    <li><strong>files/banners/*</strong> — gambar banner slider</li>
+                    <li><strong>files/posts/*</strong> — gambar featured berita / halaman</li>
+                    <li><strong>files/announcements/*</strong> — gambar pengumuman</li>
+                  </ul>
+                </div>
+              )}
             </div>
 
             {/* Warning */}

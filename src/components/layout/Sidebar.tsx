@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import {
+  BookCopy,
   BookOpen,
   GraduationCap,
   Image,
@@ -36,6 +37,7 @@ const navItems = {
     { href: "/dashboard/menu", label: "Menu", icon: LayoutDashboard },
     { href: "/dashboard/contact", label: "Kontak", icon: PhoneCall },
     { href: "/dashboard/footer", label: "Footer", icon: Link2 },
+    { href: "/dashboard/panduan", label: "Panduan", icon: BookCopy },
     { href: "/dashboard/repository", label: "Repository", icon: BookOpen },
   ],
   MAHASISWA: [

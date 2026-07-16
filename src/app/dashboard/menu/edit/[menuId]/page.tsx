@@ -57,6 +57,7 @@ export default function EditMenuPage() {
       name,
       type,
       href: type === "EXTERNAL" || type === "STATIC_PATH" ? href : null,
+      postId: type === "INTERNAL" ? (menuItem as any).post?.id || null : undefined,
     };
 
     // Perbaikan URL API

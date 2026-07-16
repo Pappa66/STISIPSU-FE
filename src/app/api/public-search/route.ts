@@ -11,7 +11,9 @@ export async function GET(request: Request) {
   }
 
   try {
-    const res = await fetch(`${BACKEND_URL}api/public/search?q=${encodeURIComponent(q.trim())}`, {
+    const url = new URL('/api/public/search', BACKEND_URL);
+    url.searchParams.set('q', q.trim());
+    const res = await fetch(url.toString(), {
       next: { revalidate: 60 },
     });
 

@@ -353,7 +353,8 @@ export default function AnnouncementManagementPage() {
               </button>
             </div>
 
-            <div className="w-full overflow-x-auto rounded">
+            {/* Desktop table */}
+            <div className="hidden md:block w-full overflow-x-auto rounded">
               <table className="min-w-[640px] w-full text-sm text-left border border-gray-200">
                 <thead className="bg-gray-50 text-gray-700 font-medium">
                   <tr>
@@ -367,72 +368,78 @@ export default function AnnouncementManagementPage() {
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={5} className="text-center py-8">
-                        <LoadingSpinner />
-                      </td>
+                      <td colSpan={5} className="text-center py-8"><LoadingSpinner /></td>
                     </tr>
                   ) : data.length > 0 ? (
                     data.map((item) => (
-                      <tr
-                        key={item.id}
-                        className="border-t hover:bg-gray-50 transition"
-                      >
-                        <td className="px-4 py-3 font-semibold">
-                          {item.title}
-                        </td>
+                      <tr key={item.id} className="border-t hover:bg-gray-50 transition">
+                        <td className="px-4 py-3 font-semibold">{item.title}</td>
                         <td className="px-4 py-3">{item.type}</td>
                         <td className="px-4 py-3">
-                          <span
-                            className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                              item.isActive
-                                ? "bg-green-100 text-green-700"
-                                : "bg-red-100 text-red-700"
-                            }`}
-                          >
+                          <span className={`text-xs font-semibold px-2 py-1 rounded-full ${item.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
                             {item.isActive ? "Aktif" : "Tidak Aktif"}
                           </span>
                         </td>
                         <td className="px-4 py-3">
-                          {item.expiresAt
-                            ? new Date(item.expiresAt).toLocaleDateString(
-                                "id-ID",
-                                {
-                                  year: "numeric",
-                                  month: "long",
-                                  day: "numeric",
-                                }
-                              )
-                            : "-"}
+                          {item.expiresAt ? new Date(item.expiresAt).toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" }) : "-"}
                         </td>
-                        <td className="px-4 py-3 flex justify-center gap-4">
-                          <button
-                            onClick={() => openModal(item)}
-                            className="text-sky-600 hover:text-sky-800 transition"
-                          >
-                            <Edit size={18} />
-                          </button>
-                          <button
-                            onClick={() => setConfirmDelete(item)}
-                            className="text-red-600 hover:text-red-800 transition"
-                          >
-                            <Trash2 size={18} />
-                          </button>
+                        <td className="px-4 py-3">
+                          <div className="flex justify-center gap-3">
+                            <button onClick={() => openModal(item)} className="p-2 text-sky-600 hover:bg-sky-100 rounded-md transition" title="Edit">
+                              <Edit size={16} />
+                            </button>
+                            <button onClick={() => setConfirmDelete(item)} className="p-2 text-red-600 hover:bg-red-100 rounded-md transition" title="Hapus">
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td
-                        colSpan={5}
-                        className="text-center py-12 text-gray-400 flex flex-col items-center"
-                      >
-                        <AlertTriangle className="mb-3" size={36} />
-                        Belum ada pengumuman
+                      <td colSpan={5} className="text-center py-12 text-gray-400">
+                        <AlertTriangle className="inline mb-2" size={36} />
+                        <p>Belum ada pengumuman</p>
                       </td>
                     </tr>
                   )}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden space-y-3">
+              {isLoading ? (
+                <div className="text-center py-8"><LoadingSpinner /></div>
+              ) : data.length > 0 ? (
+                data.map((item) => (
+                  <div key={item.id} className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-semibold text-gray-900 text-sm flex-1 break-words">{item.title}</h3>
+                      <div className="flex gap-1 shrink-0">
+                        <button onClick={() => openModal(item)} className="p-2 text-sky-600 hover:bg-sky-100 rounded-md" title="Edit">
+                          <Edit size={16} />
+                        </button>
+                        <button onClick={() => setConfirmDelete(item)} className="p-2 text-red-600 hover:bg-red-100 rounded-md" title="Hapus">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full font-semibold ${item.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                        {item.isActive ? "Aktif" : "Tidak Aktif"}
+                      </span>
+                      <span>Tipe: {item.type}</span>
+                      {item.expiresAt && <span>Kedaluwarsa: {new Date(item.expiresAt).toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" })}</span>}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-12 text-gray-400">
+                  <AlertTriangle className="inline mb-2" size={36} />
+                  <p>Belum ada pengumuman</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

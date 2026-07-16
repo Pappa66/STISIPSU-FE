@@ -153,51 +153,36 @@ export default function NewsManagement() {
               </div>
             </div>
 
-            {/* Table */}
-            <div className="rounded-lg border border-gray-200">
+            {/* Desktop table */}
+            <div className="hidden md:block rounded-lg border border-gray-200 overflow-x-auto">
               <table className="w-full text-sm table-fixed">
                 <thead className="bg-sky-50 text-sky-700 text-left uppercase tracking-wide">
                   <tr>
                     <th className="px-4 py-4 font-semibold w-[45%]">Judul</th>
                     <th className="px-4 py-4 font-semibold w-[20%]">Tanggal</th>
                     <th className="px-4 py-4 font-semibold w-[20%]">Status</th>
-                    <th className="px-4 py-4 font-semibold text-center w-[15%]">
-                      Aksi
-                    </th>
+                    <th className="px-4 py-4 font-semibold text-center w-[15%]">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 text-gray-700">
                   {isLoading ? (
                     <tr>
-                      <td colSpan={4} className="text-center p-16">
-                        <LoadingSpinner />
-                      </td>
+                      <td colSpan={4} className="text-center p-16"><LoadingSpinner /></td>
                     </tr>
                   ) : newsItems.length > 0 ? (
                     newsItems.map((item) => (
                       <tr key={item.id} className="hover:bg-gray-50 transition">
                         <td className="px-4 py-4 font-medium text-gray-900 max-w-0">
-                          <span className="block truncate" title={item.title}>
-                            {item.title}
-                          </span>
+                          <span className="block truncate" title={item.title}>{item.title}</span>
                         </td>
                         <td className="px-4 py-4 text-gray-600 text-sm">
-                          {new Date(item.createdAt).toLocaleDateString(
-                            "id-ID",
-                            { day: "numeric", month: "short", year: "numeric" }
-                          )}
+                          {new Date(item.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
                         </td>
                         <td className="px-4 py-4">
                           <label className="inline-flex items-center cursor-pointer gap-2">
-                            <input
-                              type="checkbox"
-                              className="sr-only peer"
-                              checked={item.isPublished}
+                            <input type="checkbox" className="sr-only peer" checked={item.isPublished}
                               disabled={loadingId === item.id}
-                              onChange={() =>
-                                togglePublish(item.id, item.isPublished)
-                              }
-                            />
+                              onChange={() => togglePublish(item.id, item.isPublished)} />
                             <div className="relative w-11 h-6 bg-gray-200 peer-checked:bg-green-500 rounded-full transition-all duration-300 border-2 border-gray-300 peer-checked:border-green-600 shadow-inner">
                               <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow peer-checked:translate-x-5 transition-transform duration-300 border border-gray-400" />
                             </div>
@@ -207,20 +192,14 @@ export default function NewsManagement() {
                           </label>
                         </td>
                         <td className="px-4 py-4 text-center">
-                          <div className="flex justify-center gap-1">
-                            <button
-                              onClick={() => handleEdit(item.id)}
-                              className="p-1.5 text-sky-600 hover:bg-sky-100 rounded-md transition-colors"
-                              title="Edit Berita"
-                            >
-                              <Edit size={15} />
+                          <div className="flex justify-center gap-2">
+                            <button onClick={() => handleEdit(item.id)}
+                              className="p-2 text-sky-600 hover:bg-sky-100 rounded-md transition-colors" title="Edit Berita">
+                              <Edit size={16} />
                             </button>
-                            <button
-                              onClick={() => confirmDelete(item.id, item.title)}
-                              className="p-1.5 text-red-600 hover:bg-red-100 rounded-md transition-colors"
-                              title="Hapus Berita"
-                            >
-                              <Trash2 size={15} />
+                            <button onClick={() => confirmDelete(item.id, item.title)}
+                              className="p-2 text-red-600 hover:bg-red-100 rounded-md transition-colors" title="Hapus Berita">
+                              <Trash2 size={16} />
                             </button>
                           </div>
                         </td>
@@ -228,19 +207,12 @@ export default function NewsManagement() {
                     ))
                   ) : (
                     <tr>
-                      <td
-                        colSpan={4}
-                        className="text-center p-16 text-gray-500"
-                      >
+                      <td colSpan={4} className="text-center p-16 text-gray-500">
                         <div className="flex flex-col items-center">
                           <Newspaper size={48} className="text-gray-300 mb-4" />
-                          <h3 className="text-lg font-semibold">
-                            Belum Ada Berita
-                          </h3>
+                          <h3 className="text-lg font-semibold">Belum Ada Berita</h3>
                           <p className="mt-2 text-sm">
-                            {searchQuery
-                              ? "Tidak ada berita yang cocok dengan pencarian Anda."
-                              : 'Klik "Tambah Berita" untuk memulai.'}
+                            {searchQuery ? "Tidak ada berita yang cocok dengan pencarian Anda." : 'Klik "Tambah Berita" untuk memulai.'}
                           </p>
                         </div>
                       </td>
@@ -248,6 +220,55 @@ export default function NewsManagement() {
                   )}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden space-y-3">
+              {isLoading ? (
+                <div className="text-center py-16"><LoadingSpinner /></div>
+              ) : newsItems.length > 0 ? (
+                newsItems.map((item) => (
+                  <div key={item.id} className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="font-semibold text-gray-900 text-sm leading-snug break-words flex-1">{item.title}</h3>
+                      <div className="flex gap-1 shrink-0">
+                        <button onClick={() => handleEdit(item.id)}
+                          className="p-2 text-sky-600 hover:bg-sky-100 rounded-md transition-colors" title="Edit Berita">
+                          <Edit size={16} />
+                        </button>
+                        <button onClick={() => confirmDelete(item.id, item.title)}
+                          className="p-2 text-red-600 hover:bg-red-100 rounded-md transition-colors" title="Hapus Berita">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>{new Date(item.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}</span>
+                      <label className="inline-flex items-center cursor-pointer gap-2">
+                        <input type="checkbox" className="sr-only peer" checked={item.isPublished}
+                          disabled={loadingId === item.id}
+                          onChange={() => togglePublish(item.id, item.isPublished)} />
+                        <div className="relative w-9 h-5 bg-gray-200 peer-checked:bg-green-500 rounded-full transition-all border-2 border-gray-300 peer-checked:border-green-600 shadow-inner">
+                          <div className="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full shadow peer-checked:translate-x-4 transition-transform duration-300 border border-gray-400" />
+                        </div>
+                        <span className={`text-xs font-semibold ${item.isPublished ? 'text-green-700' : 'text-gray-500'}`}>
+                          {item.isPublished ? "Terbit" : "Draf"}
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-16 text-gray-500">
+                  <div className="flex flex-col items-center">
+                    <Newspaper size={48} className="text-gray-300 mb-4" />
+                    <h3 className="text-lg font-semibold">Belum Ada Berita</h3>
+                    <p className="mt-2 text-sm">
+                      {searchQuery ? "Tidak ada berita yang cocok dengan pencarian Anda." : 'Klik "Tambah Berita" untuk memulai.'}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>

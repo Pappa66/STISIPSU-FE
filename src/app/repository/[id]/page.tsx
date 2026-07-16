@@ -208,6 +208,15 @@ export default function RepositoryDetailPage() {
                   {item.studyProgram}
                 </div>
               </li>
+              {item.category && (
+                <li className="flex items-start gap-3">
+                  <Bookmark className="h-5 w-5 text-indigo-600 mt-1" />
+                  <div>
+                    <strong className="block text-gray-700">Kategori:</strong>
+                    {item.category}
+                  </div>
+                </li>
+              )}
               <li className="flex items-start gap-3">
                 <Tag className="h-5 w-5 text-indigo-600 mt-1" />
                 <div>

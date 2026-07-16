@@ -53,6 +53,7 @@ export default function RepositoryListPage() {
   // Filter state
   const [search, setSearch] = useState("");
   const [studyProgram, setStudyProgram] = useState("");
+  const [category, setCategory] = useState("");
   const [yearFrom, setYearFrom] = useState("");
   const [yearTo, setYearTo] = useState("");
 
@@ -63,6 +64,12 @@ export default function RepositoryListPage() {
     const prodi = new Set<string>();
     items.forEach((item) => { if (item.studyProgram) prodi.add(item.studyProgram); });
     return Array.from(prodi).sort();
+  }, [items]);
+
+  const categories = useMemo(() => {
+    const cats = new Set<string>();
+    items.forEach((item) => { if (item.category) cats.add(item.category); });
+    return Array.from(cats).sort();
   }, [items]);
 
   // Filter
@@ -81,6 +88,9 @@ export default function RepositoryListPage() {
     if (studyProgram) {
       result = result.filter((item) => item.studyProgram === studyProgram);
     }
+    if (category) {
+      result = result.filter((item) => item.category === category);
+    }
     if (yearFrom) {
       result = result.filter((item) => item.year && item.year >= parseInt(yearFrom));
     }
@@ -88,7 +98,7 @@ export default function RepositoryListPage() {
       result = result.filter((item) => item.year && item.year <= parseInt(yearTo));
     }
     return result;
-  }, [items, search, studyProgram, yearFrom, yearTo]);
+  }, [items, search, studyProgram, category, yearFrom, yearTo]);
 
   const handleLoadMore = () => {
     setShowPagination(true);
@@ -123,11 +133,12 @@ export default function RepositoryListPage() {
   const resetFilters = () => {
     setSearch("");
     setStudyProgram("");
+    setCategory("");
     setYearFrom("");
     setYearTo("");
   };
 
-  const hasFilters = search || studyProgram || yearFrom || yearTo;
+  const hasFilters = search || studyProgram || category || yearFrom || yearTo;
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -171,6 +182,19 @@ export default function RepositoryListPage() {
                   <option value="">Semua Prodi</option>
                   {studyPrograms.map((p) => (
                     <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="min-w-[150px]">
+                <label className="block text-xs font-semibold text-gray-600 mb-1">Kategori</label>
+                <select
+                  value={category}
+                  onChange={(e) => { setCategory(e.target.value); setShowPagination(false); }}
+                  className="w-full px-3 py-2 border rounded-md text-sm"
+                >
+                  <option value="">Semua Kategori</option>
+                  {categories.map((c) => (
+                    <option key={c} value={c}>{c}</option>
                   ))}
                 </select>
               </div>

@@ -53,6 +53,7 @@ export interface RepositoryItem {
   author: string | { name: string };
   year?: number;
   studyProgram?: string;
+  category?: string | null;
   showDownloadsToPublic?: boolean;
   createdAt: string;
   publishedAt?: string;
@@ -66,6 +67,7 @@ export interface RepositoryItem {
 export interface RepositoryDetail extends RepositoryItem {
   abstract?: string | null;
   keywords?: string | null;
+  category?: string | null;
   files: FileItem[];
   publishedAt: string | null;
   advisor?: { name: string } | null;

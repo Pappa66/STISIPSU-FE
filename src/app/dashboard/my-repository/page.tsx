@@ -21,6 +21,8 @@ import Link from "next/link";
 import { formatAuthorName } from "@/utils/formatters";
 
 // --- Tipe Data ---
+const CATEGORIES = ["Skripsi", "Tesis", "Artikel Ilmiah", "Penelitian", "Laporan"];
+
 interface MyRepositoryItem {
   id: string;
   title: string;
@@ -29,6 +31,7 @@ interface MyRepositoryItem {
   updatedAt: string;
   advisor: { name: string } | null;
   secondAdvisor: { name: string } | null;
+  category: string | null;
 }
 interface Prerequisites {
   studentName: string;
@@ -98,6 +101,7 @@ const UploadModal = ({
     abstract: "",
     keywords: "",
     year: new Date().getFullYear().toString(),
+    category: "",
     gdriveLink: "",
   });
   const [files, setFiles] = useState<FileToUpload[]>([]);
@@ -120,6 +124,7 @@ const UploadModal = ({
         abstract: "",
         keywords: "",
         year: new Date(editItem.updatedAt).getFullYear().toString(),
+        category: editItem.category || "",
         gdriveLink: "",
       });
     }
@@ -213,6 +218,7 @@ const UploadModal = ({
           abstract: "",
           keywords: "",
           year: new Date().getFullYear().toString(),
+          category: "",
           gdriveLink: "",
         });
         setFiles([]);
@@ -289,7 +295,7 @@ const UploadModal = ({
           </div>
 
           {/* Form Inputs */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div>
               <label className="text-sm font-medium text-gray-700">Judul</label>
               <input
@@ -313,6 +319,21 @@ const UploadModal = ({
                 className="mt-1 w-full border rounded-md px-3 py-2"
                 required
               />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700">Kategori</label>
+              <select
+                value={formData.category}
+                onChange={(e) =>
+                  setFormData({ ...formData, category: e.target.value })
+                }
+                className="mt-1 w-full border rounded-md px-3 py-2"
+              >
+                <option value="">Pilih Kategori</option>
+                {CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -518,6 +539,9 @@ export default function MyRepositoryPage() {
                           </span>
                           {item.secondAdvisor?.name && (
                             <> | Penguji: <span className="font-medium">{item.secondAdvisor.name}</span></>
+                          )}
+                          {item.category && (
+                            <> | Kategori: <span className="font-medium">{item.category}</span></>
                           )}
                           {" | "}Update:{" "}
                           <span className="font-medium">

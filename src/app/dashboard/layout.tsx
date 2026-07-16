@@ -60,7 +60,7 @@ export default function RootLayout({
               // ✅ Layout khusus dashboard: Sidebar + konten utama
               <div className="flex min-h-screen bg-gray-50">
                 <Sidebar />
-                <div className="flex-1 ml-0 md:ml-64 p-6 relative">
+                <div className="flex-1 p-4 sm:p-6 relative">
                   {children}
                 </div>
               </div>

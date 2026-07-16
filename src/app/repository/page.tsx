@@ -59,12 +59,7 @@ export default function RepositoryListPage() {
 
   const ITEMS_PER_PAGE = 8;
 
-  // Extract unique study programs
-  const studyPrograms = useMemo(() => {
-    const prodi = new Set<string>();
-    items.forEach((item) => { if (item.studyProgram) prodi.add(item.studyProgram); });
-    return Array.from(prodi).sort();
-  }, [items]);
+  const STUDY_PROGRAMS = ["Ilmu Administrasi Negara", "Ilmu Pemerintahan"];
 
   const categories = useMemo(() => {
     const cats = new Set<string>();
@@ -180,7 +175,7 @@ export default function RepositoryListPage() {
                   className="w-full px-3 py-2 border rounded-md text-sm"
                 >
                   <option value="">Semua Prodi</option>
-                  {studyPrograms.map((p) => (
+                  {STUDY_PROGRAMS.map((p) => (
                     <option key={p} value={p}>{p}</option>
                   ))}
                 </select>

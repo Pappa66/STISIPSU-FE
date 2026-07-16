@@ -730,95 +730,156 @@ function UserManagementModule({
         )}
       </div>
 
-      <div className="w-full overflow-auto bg-white rounded-lg border max-w-full sm:max-w-screen-xl mx-auto">
-        {isLoading ? (
-          <div className="text-center p-8 text-gray-500 flex items-center justify-center">
-            <Spinner size="md" />{" "}
-            <span className="ml-2">Memuat data pengguna...</span>
-          </div>
-        ) : users.length === 0 ? (
-          <p className="text-center p-8 text-gray-500">
-            Tidak ada pengguna yang cocok dengan filter saat ini.
-          </p>
-        ) : (
-          <table className="min-w-full text-sm">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="p-4 text-left font-semibold">Nama</th>
-                <th className="p-4 text-left font-semibold">Email</th>
-                <th className="p-4 text-left font-semibold">Kode</th>
-                <th className="p-4 text-left font-semibold">Peran & Detail</th>
-                <th className="p-4 text-center font-semibold">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td className="p-4 font-medium">{user.name}</td>
-                  <td className="p-4 text-gray-600">{user.email}</td>
-                  <td className="p-4 font-mono text-xs text-gray-500">
-                    {user.userCode}
-                  </td>
-                  <td className="p-4">
-                    <div className="flex flex-col gap-1">
-                      <span
-                        className={`w-fit px-2 py-1 text-xs font-medium rounded-full ${
-                          user.role === "ADMIN"
-                            ? "bg-red-100 text-red-800"
-                            : user.role === "DOSEN"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-blue-100 text-blue-800"
-                        }`}
-                      >
-                        {user.role}
-                      </span>
-                      {user.role === "MAHASISWA" && (
-                        <span className="text-xs text-gray-500 mt-1">
-                          NPM: {user.npm || "-"} | {user.studyProgram}
-                        </span>
-                      )}
-                      {user.role === "DOSEN" && (
-                        <span className="text-xs text-gray-500 mt-1">
-                          NPD: {user.npd || "-"}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex justify-center gap-2">
-                      <button
-                        onClick={() => setEditingUser(user)}
-                        className="p-2 text-blue-600 hover:bg-blue-100 rounded-md"
-                        title="Edit Pengguna"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleResetPassword(user.id)}
-                        className="p-2 text-yellow-600 hover:bg-yellow-100 rounded-md"
-                        disabled={user.id === currentUserId}
-                        title="Reset Password"
-                      >
-                        <KeyRound size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="p-2 text-red-600 hover:bg-red-100 rounded-md"
-                        disabled={
-                          user.id === currentUserId || user.role === "ADMIN"
-                        }
-                        title="Hapus Pengguna"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
+      {isLoading ? (
+        <div className="w-full bg-white rounded-lg border p-8 text-center text-gray-500 flex items-center justify-center">
+          <Spinner size="md" />{" "}
+          <span className="ml-2">Memuat data pengguna...</span>
+        </div>
+      ) : users.length === 0 ? (
+        <div className="w-full bg-white rounded-lg border p-8 text-center text-gray-500">
+          Tidak ada pengguna yang cocok dengan filter saat ini.
+        </div>
+      ) : (
+        <>
+          {/* Table — Desktop */}
+          <div className="hidden md:block w-full overflow-x-auto bg-white rounded-lg border">
+            <table className="min-w-full text-sm">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="p-4 text-left font-semibold">Nama</th>
+                  <th className="p-4 text-left font-semibold">Email</th>
+                  <th className="p-4 text-left font-semibold">Kode</th>
+                  <th className="p-4 text-left font-semibold">Peran & Detail</th>
+                  <th className="p-4 text-center font-semibold">Aksi</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+              </thead>
+              <tbody className="divide-y">
+                {users.map((user) => (
+                  <tr key={user.id}>
+                    <td className="p-4 font-medium">{user.name}</td>
+                    <td className="p-4 text-gray-600">{user.email}</td>
+                    <td className="p-4 font-mono text-xs text-gray-500">
+                      {user.userCode}
+                    </td>
+                    <td className="p-4">
+                      <div className="flex flex-col gap-1">
+                        <span
+                          className={`w-fit px-2 py-1 text-xs font-medium rounded-full ${
+                            user.role === "ADMIN"
+                              ? "bg-red-100 text-red-800"
+                              : user.role === "DOSEN"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-blue-100 text-blue-800"
+                          }`}
+                        >
+                          {user.role}
+                        </span>
+                        {user.role === "MAHASISWA" && (
+                          <span className="text-xs text-gray-500 mt-1">
+                            NPM: {user.npm || "-"} | {user.studyProgram}
+                          </span>
+                        )}
+                        {user.role === "DOSEN" && (
+                          <span className="text-xs text-gray-500 mt-1">
+                            NPD: {user.npd || "-"}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex justify-center gap-2">
+                        <button
+                          onClick={() => setEditingUser(user)}
+                          className="p-2 text-blue-600 hover:bg-blue-100 rounded-md"
+                          title="Edit Pengguna"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleResetPassword(user.id)}
+                          className="p-2 text-yellow-600 hover:bg-yellow-100 rounded-md"
+                          disabled={user.id === currentUserId}
+                          title="Reset Password"
+                        >
+                          <KeyRound size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(user.id)}
+                          className="p-2 text-red-600 hover:bg-red-100 rounded-md"
+                          disabled={
+                            user.id === currentUserId || user.role === "ADMIN"
+                          }
+                          title="Hapus Pengguna"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile cards */}
+          <div className="md:hidden space-y-3">
+            {users.map((user) => (
+              <div key={user.id} className="bg-white border rounded-lg p-4 shadow-sm">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <p className="font-semibold text-sm text-gray-900">{user.name}</p>
+                    <p className="text-xs text-gray-500">{user.email}</p>
+                    <p className="text-xs text-gray-400 font-mono">{user.userCode}</p>
+                  </div>
+                  <span
+                    className={`shrink-0 px-2 py-0.5 text-xs font-medium rounded-full ${
+                      user.role === "ADMIN"
+                        ? "bg-red-100 text-red-800"
+                        : user.role === "DOSEN"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-blue-100 text-blue-800"
+                    }`}
+                  >
+                    {user.role}
+                  </span>
+                </div>
+                {user.role === "MAHASISWA" && (
+                  <p className="text-xs text-gray-500 mb-3">
+                    NPM: {user.npm || "-"} | {user.studyProgram}
+                  </p>
+                )}
+                {user.role === "DOSEN" && (
+                  <p className="text-xs text-gray-500 mb-3">
+                    NPD: {user.npd || "-"}
+                  </p>
+                )}
+                <div className="flex gap-2 pt-2 border-t">
+                  <button
+                    onClick={() => setEditingUser(user)}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 rounded-md hover:bg-blue-100"
+                  >
+                    <Edit size={14} /> Edit
+                  </button>
+                  <button
+                    onClick={() => handleResetPassword(user.id)}
+                    disabled={user.id === currentUserId}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-yellow-700 bg-yellow-50 rounded-md hover:bg-yellow-100 disabled:opacity-50"
+                  >
+                    <KeyRound size={14} /> Reset Password
+                  </button>
+                  <button
+                    onClick={() => handleDeleteUser(user.id)}
+                    disabled={user.id === currentUserId || user.role === "ADMIN"}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 rounded-md hover:bg-red-100 disabled:opacity-50"
+                  >
+                    <Trash2 size={14} /> Hapus
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
 
       {editingUser && (
         <div className="fixed inset-0 z-[9999] bg-black/30 backdrop-blur-sm flex justify-center items-center p-4">

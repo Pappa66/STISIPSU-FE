@@ -147,8 +147,8 @@ export default function PageManagement() {
             </div>
           </div>
 
-          {/* Table */}
-          <div className="overflow-x-auto rounded-lg border border-gray-200">
+          {/* Table — Desktop */}
+          <div className="hidden md:block rounded-lg border border-gray-200 overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 text-sm">
               <thead className="bg-sky-50 text-sky-700 uppercase tracking-wider">
                 <tr>
@@ -227,6 +227,60 @@ export default function PageManagement() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile cards */}
+          <div className="md:hidden space-y-3">
+            {paginatedPages.length > 0 ? (
+              paginatedPages.map((page) => (
+                <div
+                  key={page.id}
+                  className="bg-white border rounded-lg p-4 shadow-sm"
+                >
+                  <h3 className="font-semibold text-gray-900 text-sm mb-2 break-words">
+                    {page.title}
+                  </h3>
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {page.menuItem && (
+                      <span className="bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full text-xs font-medium">
+                        Menu: {page.menuItem.name}
+                      </span>
+                    )}
+                    {page.submenuItem && (
+                      <span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-xs font-medium">
+                        Sub: {page.submenuItem.name} ({page.submenuItem.menuItem.name})
+                      </span>
+                    )}
+                    {!page.menuItem && !page.submenuItem && (
+                      <span className="text-gray-400 text-xs">Tidak terhubung</span>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(page.id)}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-sky-700 bg-sky-50 rounded-md hover:bg-sky-100"
+                    >
+                      <Edit size={14} /> Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(page.title)}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-md hover:bg-red-100"
+                    >
+                      <Trash2 size={14} /> Hapus
+                    </button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-12 text-gray-500">
+                <h3 className="text-lg font-semibold">Belum Ada Halaman</h3>
+                <p className="mt-2 text-sm">
+                  {searchQuery
+                    ? "Tidak ada hasil untuk pencarian Anda."
+                    : 'Buat halaman baru dari modul "Kelola Menu".'}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Pagination */}

@@ -139,8 +139,8 @@ export default function PostManagementPage() {
           />
         </div>
 
-        {/* Table */}
-        <div className="bg-white rounded-lg shadow ring-1 ring-gray-200 overflow-x-auto">
+        {/* Table — Desktop */}
+        <div className="hidden md:block bg-white rounded-lg shadow ring-1 ring-gray-200 overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 text-sm">
             <thead className="bg-sky-50 sticky top-0 z-10">
               <tr>
@@ -218,6 +218,60 @@ export default function PostManagementPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile cards */}
+        <div className="md:hidden space-y-3">
+          {posts.length > 0 ? (
+            posts.map((post) => (
+              <div key={post.id} className="bg-white border rounded-lg p-4 shadow-sm">
+                <h3 className="font-semibold text-sm text-gray-900 mb-2 break-words">
+                  {post.title}
+                </h3>
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {post.menuItem && (
+                    <span className="bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full text-xs font-medium">
+                      Menu: {post.menuItem.name}
+                    </span>
+                  )}
+                  {post.submenuItem && (
+                    <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-medium">
+                      Sub: {post.submenuItem.name} ({post.submenuItem.menuItem.name})
+                    </span>
+                  )}
+                  {!post.menuItem && !post.submenuItem && (
+                    <span className="text-xs text-gray-400">Tidak terhubung</span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 mb-3">
+                  Author: {post.author?.name || "N/A"}
+                </p>
+                <div className="flex gap-2 pt-2 border-t">
+                  <button
+                    onClick={() => handleEdit(post.id)}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-sky-700 bg-sky-50 rounded-md hover:bg-sky-100"
+                  >
+                    <Edit size={14} /> Edit
+                  </button>
+                  <button
+                    onClick={() => confirmDelete(post.id)}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-md hover:bg-red-100"
+                  >
+                    <Trash2 size={14} /> Hapus
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center p-12 text-gray-500">
+              <h3 className="text-lg font-semibold">Tidak Ada Konten</h3>
+              <p className="mt-2 text-sm">
+                {searchQuery
+                  ? "Tidak ada hasil untuk pencarian Anda."
+                  : "Belum ada postingan yang dibuat."}
+              </p>
+            </div>
+          )}
         </div>
 
         <ConfirmModal

@@ -188,7 +188,7 @@ export default function NewsManagement() {
                           )}
                         </td>
                         <td className="px-4 py-4">
-                          <label className="inline-flex items-center cursor-pointer gap-1.5">
+                          <label className="inline-flex items-center cursor-pointer gap-2">
                             <input
                               type="checkbox"
                               className="sr-only peer"
@@ -198,8 +198,10 @@ export default function NewsManagement() {
                                 togglePublish(item.id, item.isPublished)
                               }
                             />
-                            <div className="w-9 h-5 bg-gray-300 peer-checked:bg-green-500 rounded-full transition shrink-0" />
-                            <span className={`text-xs font-medium ${item.isPublished ? 'text-green-600' : 'text-gray-500'}`}>
+                            <div className="relative w-11 h-6 bg-gray-200 peer-checked:bg-green-500 rounded-full transition-all duration-300 border-2 border-gray-300 peer-checked:border-green-600 shadow-inner">
+                              <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow peer-checked:translate-x-5 transition-transform duration-300 border border-gray-400" />
+                            </div>
+                            <span className={`text-xs font-semibold ${item.isPublished ? 'text-green-700' : 'text-gray-500'}`}>
                               {item.isPublished ? "Terbit" : "Draf"}
                             </span>
                           </label>

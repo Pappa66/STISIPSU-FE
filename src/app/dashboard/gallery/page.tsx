@@ -39,6 +39,7 @@ const fetcher = (url: string) =>
   });
 
 function buildImageUrl(baseUrl: string, imageUrl: string) {
+  if (imageUrl.startsWith('http')) return imageUrl.replace(/^\//, '');
   return `${baseUrl.replace(/\/$/, "")}/${imageUrl.replace(/^\//, "")}`;
 }
 

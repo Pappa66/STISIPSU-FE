@@ -14,6 +14,7 @@ interface AdvisedStudent {
   npm: string | null;
   userCode: string;
   pendingItemsCount: number;
+  role?: string;
 }
 // Tipe data untuk respons API yang menyertakan pagination
 interface PaginatedResponse {
@@ -92,6 +93,11 @@ export default function AdvisingPage() {
                             <div>
                               <p className="text-sm font-medium text-indigo-600 truncate">
                                 {student.name}
+                                {student.role === 'penguji' && (
+                                  <span className="ml-2 inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-orange-100 text-orange-800">
+                                    Penguji
+                                  </span>
+                                )}
                               </p>
                               <p className="mt-1 flex items-center text-sm text-gray-500">
                                 <span className="truncate">

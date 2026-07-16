@@ -17,6 +17,7 @@ import {
   Info,
   ChevronDown,
   ChevronRight,
+  UserPlus,
 } from "lucide-react";
 
 // --- Types ---
@@ -36,6 +37,16 @@ interface SubmissionItem {
   showDownloadsToPublic: boolean;
   rejectionReason: string | null;
   files: FileItem[];
+  advisor: { name: string } | null;
+  secondAdvisor: { name: string } | null;
+}
+
+interface Lecturer {
+  id: string;
+  name: string;
+  nidn: string;
+  userCode: string;
+  email: string;
 }
 
 // --- SWR Fetcher ---
@@ -262,7 +273,13 @@ export default function StudentSubmissionsPage() {
   const { token } = useAuthStore();
   const params = useParams();
   const studentId = params.studentId as string;
+
+  const currentUserName = token
+    ? (() => { try { return JSON.parse(atob(token.split('.')[1])).name; } catch { return ''; } })()
+    : '';
   const [openSubmissionId, setOpenSubmissionId] = useState<string | null>(null);
+  const [selectedSecondAdvisor, setSelectedSecondAdvisor] = useState("");
+  const [assigningAdvisor, setAssigningAdvisor] = useState(false);
 
   const apiUrl = token
     ? `${process.env.NEXT_PUBLIC_API_URL}api/advisor/students/${studentId}/items`
@@ -274,6 +291,18 @@ export default function StudentSubmissionsPage() {
     isLoading,
     mutate,
   } = useSWR<SubmissionItem[]>(apiUrl, (url: string) => fetcher(url, token));
+
+  const { data: lecturers } = useSWR<Lecturer[]>(
+    token
+      ? `${process.env.NEXT_PUBLIC_API_URL}api/users/lecturers`
+      : null,
+    (url: string) => fetcher(url, token)
+  );
+
+  // Ambil dosen pembimbing utama dari item pertama
+  const mainAdvisor = items && items.length > 0 ? items[0].advisor : null;
+  const currentSecondAdvisor = items && items.length > 0 ? items[0].secondAdvisor : null;
+  const isMainAdvisor = mainAdvisor?.name === currentUserName;
 
   const handleToggleSubmission = (itemId: string) => {
     setOpenSubmissionId((prevId) => (prevId === itemId ? null : itemId));
@@ -300,6 +329,24 @@ export default function StudentSubmissionsPage() {
     }
   };
 
+  const handleAssignSecondAdvisor = async () => {
+    if (!selectedSecondAdvisor || !items || items.length === 0) return;
+    setAssigningAdvisor(true);
+    try {
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}api/advisor/items/${items[0].id}/assign-second-advisor`,
+        { secondAdvisorId: selectedSecondAdvisor },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success("✅ Penguji kedua berhasil ditetapkan");
+      mutate();
+    } catch (err) {
+      toast.error("❌ Gagal menetapkan penguji kedua");
+    } finally {
+      setAssigningAdvisor(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="text-center py-12 text-gray-500">
@@ -320,7 +367,7 @@ export default function StudentSubmissionsPage() {
     <main className="px-4 sm:px-6 lg:px-8 py-6">
       <div className="max-w-screen-xl mx-auto">
         <div className="bg-white shadow-md rounded-xl p-4 sm:p-6 lg:p-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
             <div>
               <h1 className="text-3xl font-bold text-slate-800">
                 Daftar Kiriman Mahasiswa
@@ -336,6 +383,49 @@ export default function StudentSubmissionsPage() {
               <ArrowLeft size={16} />
               Kembali ke Bimbingan
             </Link>
+          </div>
+
+          {/* Info Dosen Pembimbing & Penguji */}
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg border space-y-2">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="font-semibold text-gray-700">Pembimbing:</span>
+              <span className="text-gray-900">{mainAdvisor?.name || "-"}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="font-semibold text-gray-700">Penguji:</span>
+              <span className="text-gray-900">{currentSecondAdvisor?.name || "Belum ditentukan"}</span>
+            </div>
+            {isMainAdvisor && (
+              <div className="mt-3 pt-3 border-t flex flex-wrap items-center gap-2">
+                <label className="text-sm font-medium text-gray-700">Tetapkan Penguji:</label>
+                <select
+                  value={selectedSecondAdvisor}
+                  onChange={(e) => setSelectedSecondAdvisor(e.target.value)}
+                  className="border rounded-md px-3 py-1.5 text-sm flex-grow max-w-xs"
+                >
+                  <option value="">-- Pilih Dosen --</option>
+                  {lecturers
+                    ?.filter((l) => l.name !== mainAdvisor?.name)
+                    .map((l) => (
+                      <option key={l.id} value={l.id}>
+                        {l.name}
+                      </option>
+                    ))}
+                </select>
+                <button
+                  onClick={handleAssignSecondAdvisor}
+                  disabled={!selectedSecondAdvisor || assigningAdvisor}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 disabled:bg-gray-400"
+                >
+                  {assigningAdvisor ? (
+                    <Loader2 className="animate-spin" size={14} />
+                  ) : (
+                    <UserPlus size={14} />
+                  )}
+                  Tetapkan
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="space-y-3">

@@ -28,6 +28,7 @@ import {
   HelpCircle,
   UserCog,
   Users,
+  Database,
 } from "lucide-react";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import { useEffect, useMemo, useState } from "react";
@@ -72,6 +73,12 @@ const navGroups: Record<string, NavGroup[]> = {
       label: "Fitur Utama",
       items: [
         { href: "/dashboard/repository", label: "Repository", icon: BookOpen },
+      ],
+    },
+    {
+      label: "Sistem",
+      items: [
+        { href: "/dashboard/backup", label: "Backup", icon: Database },
       ],
     },
     {

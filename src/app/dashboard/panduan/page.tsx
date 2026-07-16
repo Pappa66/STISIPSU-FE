@@ -387,18 +387,6 @@ const sections = [
     icon: Lightbulb,
     children: [
       {
-        title: "✅ Sudah Tersedia",
-        icon: CheckCircle,
-        desc: "",
-        items: [
-          "Kompresi gambar otomatis saat upload (WebP, ukuran dioptimalkan).",
-          "Menu navigasi publik bisa diberi ikon melalui menu Manajemen Menu.",
-          "Footer dinamis yang bisa diatur dari dashboard.",
-          "Sidebar admin bisa di-collapse/hide.",
-          "Pencarian publik mencakup judul, konten (blocks), tag, repository, dan galeri.",
-        ],
-      },
-      {
         title: "⏳ Rencana Pengembangan Selanjutnya",
         icon: Clock,
         desc: "Fitur-fitur berikut direncanakan untuk pengembangan ke depan:",

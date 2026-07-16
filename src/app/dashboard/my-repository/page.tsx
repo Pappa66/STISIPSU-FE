@@ -28,6 +28,7 @@ interface MyRepositoryItem {
   rejectionReason: string | null;
   updatedAt: string;
   advisor: { name: string } | null;
+  secondAdvisor: { name: string } | null;
 }
 interface Prerequisites {
   studentName: string;
@@ -514,8 +515,11 @@ export default function MyRepositoryPage() {
                           Pembimbing:{" "}
                           <span className="font-medium">
                             {item.advisor?.name || "Belum ada"}
-                          </span>{" "}
-                          | Update:{" "}
+                          </span>
+                          {item.secondAdvisor?.name && (
+                            <> | Penguji: <span className="font-medium">{item.secondAdvisor.name}</span></>
+                          )}
+                          {" | "}Update:{" "}
                           <span className="font-medium">
                             {new Date(item.updatedAt).toLocaleDateString(
                               "id-ID"

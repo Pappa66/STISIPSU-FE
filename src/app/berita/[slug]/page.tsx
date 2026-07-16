@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Calendar, User, Tag, ArrowLeft } from "lucide-react";
+import { Calendar, User, Tag, ArrowLeft, Share2, Link as LinkIcon, Check } from "lucide-react";
 import OptimizedImage from '@/components/common/OptimizedImage';
 
 interface Post {
@@ -18,6 +18,7 @@ export default function DetailBeritaPage() {
   const params = useParams();
   const [data, setData] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   const slug = typeof params.slug === "string" ? params.slug : params.slug?.[0];
 
@@ -132,6 +133,54 @@ export default function DetailBeritaPage() {
               ))}
             </div>
           )}
+
+          {/* Bagikan */}
+          <div className="mt-6 pt-4 border-t">
+            <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <Share2 size={16} /> Bagikan
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => {
+                  const url = window.location.href;
+                  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(data.title + ' ' + url)}`, '_blank');
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm bg-green-500 text-white rounded-md hover:bg-green-600 transition"
+              >
+                WhatsApp
+              </button>
+              <button
+                onClick={() => {
+                  const url = window.location.href;
+                  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+              >
+                Facebook
+              </button>
+              <button
+                onClick={() => {
+                  const url = window.location.href;
+                  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(data.title)}&url=${encodeURIComponent(url)}`, '_blank');
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm bg-black text-white rounded-md hover:bg-gray-800 transition"
+              >
+                X
+              </button>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href).then(() => {
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  });
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition"
+              >
+                {copied ? <Check size={14} /> : <LinkIcon size={14} />}
+                {copied ? 'Tersalin' : 'Salin Tautan'}
+              </button>
+            </div>
+          </div>
         </article>
       </div>
     </div>

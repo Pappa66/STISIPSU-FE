@@ -69,4 +69,5 @@ export interface RepositoryDetail extends RepositoryItem {
   files: FileItem[];
   publishedAt: string | null;
   advisor?: { name: string } | null;
+  secondAdvisor?: { name: string } | null;
 }

@@ -1,13 +1,11 @@
-// D:\STISIP\STISIPWEB\frontend\src\app\repository\page.tsx
-
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import useSWR from "swr";
 import { useAuthStore } from "@/store/authStore";
 import { jwtDecode } from "jwt-decode";
 import { RepositoryItem, UserRole } from "@/types";
-import { Search, Calendar, Eye } from "lucide-react";
+import { Search, Calendar, Eye, X } from "lucide-react";
 import RepositoryCard from "@/components/repository/RepositoryCard";
 
 type StatsResponse = {
@@ -52,8 +50,45 @@ export default function RepositoryListPage() {
   const [showPagination, setShowPagination] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const INITIAL_VISIBLE_COUNT = 4;
+  // Filter state
+  const [search, setSearch] = useState("");
+  const [studyProgram, setStudyProgram] = useState("");
+  const [yearFrom, setYearFrom] = useState("");
+  const [yearTo, setYearTo] = useState("");
+
   const ITEMS_PER_PAGE = 8;
+
+  // Extract unique study programs
+  const studyPrograms = useMemo(() => {
+    const prodi = new Set<string>();
+    items.forEach((item) => { if (item.studyProgram) prodi.add(item.studyProgram); });
+    return Array.from(prodi).sort();
+  }, [items]);
+
+  // Filter
+  const filtered = useMemo(() => {
+    let result = items;
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (item) =>
+          item.title.toLowerCase().includes(q) ||
+          item.author?.toString().toLowerCase().includes(q) ||
+          item.studyProgram?.toLowerCase().includes(q) ||
+          item.abstract?.toLowerCase().includes(q)
+      );
+    }
+    if (studyProgram) {
+      result = result.filter((item) => item.studyProgram === studyProgram);
+    }
+    if (yearFrom) {
+      result = result.filter((item) => item.year && item.year >= parseInt(yearFrom));
+    }
+    if (yearTo) {
+      result = result.filter((item) => item.year && item.year <= parseInt(yearTo));
+    }
+    return result;
+  }, [items, search, studyProgram, yearFrom, yearTo]);
 
   const handleLoadMore = () => {
     setShowPagination(true);
@@ -64,8 +99,8 @@ export default function RepositoryListPage() {
   const endIndex = startIndex + ITEMS_PER_PAGE;
 
   const paginatedItems = showPagination
-    ? items.slice(startIndex, endIndex)
-    : items.slice(0, INITIAL_VISIBLE_COUNT);
+    ? filtered.slice(startIndex, endIndex)
+    : filtered.slice(0, 4);
 
   const {
     data: stats,
@@ -85,6 +120,15 @@ export default function RepositoryListPage() {
         })
       : "-";
 
+  const resetFilters = () => {
+    setSearch("");
+    setStudyProgram("");
+    setYearFrom("");
+    setYearTo("");
+  };
+
+  const hasFilters = search || studyProgram || yearFrom || yearTo;
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <div
@@ -101,9 +145,68 @@ export default function RepositoryListPage() {
 
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
-          <h3 className="text-lg font-bold text-gray-800 mb-6">
-            Kiriman terbaru
-          </h3>
+          {/* SEARCH & FILTER SECTION */}
+          <div className="mb-8 p-4 bg-gray-50 rounded-lg border space-y-3">
+            <div className="flex flex-wrap gap-3 items-end">
+              <div className="flex-1 min-w-[200px]">
+                <label className="block text-xs font-semibold text-gray-600 mb-1">Cari</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => { setSearch(e.target.value); setShowPagination(false); }}
+                    placeholder="Judul, penulis, abstrak..."
+                    className="w-full pl-9 pr-3 py-2 border rounded-md text-sm"
+                  />
+                </div>
+              </div>
+              <div className="min-w-[150px]">
+                <label className="block text-xs font-semibold text-gray-600 mb-1">Program Studi</label>
+                <select
+                  value={studyProgram}
+                  onChange={(e) => { setStudyProgram(e.target.value); setShowPagination(false); }}
+                  className="w-full px-3 py-2 border rounded-md text-sm"
+                >
+                  <option value="">Semua Prodi</option>
+                  {studyPrograms.map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">Tahun Dari</label>
+                <input
+                  type="number"
+                  value={yearFrom}
+                  onChange={(e) => { setYearFrom(e.target.value); setShowPagination(false); }}
+                  placeholder="2020"
+                  className="w-24 px-3 py-2 border rounded-md text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">Sampai</label>
+                <input
+                  type="number"
+                  value={yearTo}
+                  onChange={(e) => { setYearTo(e.target.value); setShowPagination(false); }}
+                  placeholder="2025"
+                  className="w-24 px-3 py-2 border rounded-md text-sm"
+                />
+              </div>
+              {hasFilters && (
+                <button
+                  onClick={resetFilters}
+                  className="flex items-center gap-1 px-3 py-2 text-sm text-red-600 hover:text-red-800 border border-red-200 rounded-md hover:bg-red-50"
+                >
+                  <X size={14} /> Reset
+                </button>
+              )}
+            </div>
+            <p className="text-xs text-gray-500">
+              {hasFilters ? `${filtered.length} hasil ditemukan` : `${items.length} total karya ilmiah`}
+            </p>
+          </div>
 
           {error && (
             <div className="text-center py-16 text-red-500">
@@ -120,7 +223,7 @@ export default function RepositoryListPage() {
             </div>
           )}
 
-          {items && items.length > 0 ? (
+          {filtered.length > 0 ? (
             <>
               <div className="grid gap-6 md:grid-cols-4 sm:grid-cols-2 grid-cols-1">
                 {paginatedItems.map((item) => (
@@ -128,13 +231,13 @@ export default function RepositoryListPage() {
                 ))}
               </div>
 
-              {!showPagination && items.length > INITIAL_VISIBLE_COUNT && (
+              {!showPagination && filtered.length > 4 && (
                 <div className="mt-6 text-center">
                   <button
                     onClick={handleLoadMore}
                     className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition"
                   >
-                    Lihat Selengkapnya
+                    Lihat Selengkapnya ({filtered.length - 4} lainnya)
                   </button>
                 </div>
               )}
@@ -142,7 +245,7 @@ export default function RepositoryListPage() {
               {showPagination && (
                 <div className="mt-6 flex justify-center gap-2 flex-wrap">
                   {Array.from({
-                    length: Math.ceil(items.length / ITEMS_PER_PAGE),
+                    length: Math.ceil(filtered.length / ITEMS_PER_PAGE),
                   }).map((_, idx) => (
                     <button
                       key={idx}
@@ -161,46 +264,52 @@ export default function RepositoryListPage() {
             </>
           ) : (
             <div className="text-center text-gray-500 mt-16 border-t pt-10">
-              <h3 className="text-xl font-semibold">Belum Ada Karya Ilmiah</h3>
+              <h3 className="text-xl font-semibold">
+                {hasFilters ? "Tidak Ada Hasil" : "Belum Ada Karya Ilmiah"}
+              </h3>
               <p className="mt-2">
-                Saat ini tidak ada karya ilmiah yang dipublikasikan.
+                {hasFilters
+                  ? "Coba ubah kata kunci atau filter pencarian."
+                  : "Saat ini tidak ada karya ilmiah yang dipublikasikan."}
               </p>
             </div>
           )}
         </div>
       </section>
 
-      <div
-        className="bg-cover bg-center bg-no-repeat text-white py-12"
-        style={{ backgroundImage: `url(/images/perpus-bg.png)` }}
-      >
-        <div className="container mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div>
-            <h3 className="text-2xl md:text-3xl font-bold">
-              {stats?.totalRepositories?.toLocaleString("id-ID") ?? "-"}
-            </h3>
-            <p className="text-sm">Repository</p>
-          </div>
-          <div>
-            <h3 className="text-2xl md:text-3xl font-bold">
-              {stats?.totalAuthors?.toLocaleString("id-ID") ?? "-"}
-            </h3>
-            <p className="text-sm">Penulis</p>
-          </div>
-          <div>
-            <h3 className="text-2xl md:text-3xl font-bold">
-              {stats?.totalUsers?.toLocaleString("id-ID") ?? "-"}
-            </h3>
-            <p className="text-sm">Pengguna</p>
-          </div>
-          <div>
-            <h3 className="text-2xl md:text-3xl font-bold">
-              {stats?.totalFiles?.toLocaleString("id-ID") ?? "-"}
-            </h3>
-            <p className="text-sm">Files</p>
+      {!hasFilters && (
+        <div
+          className="bg-cover bg-center bg-no-repeat text-white py-12"
+          style={{ backgroundImage: `url(/images/perpus-bg.png)` }}
+        >
+          <div className="container mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div>
+              <h3 className="text-2xl md:text-3xl font-bold">
+                {stats?.totalRepositories?.toLocaleString("id-ID") ?? "-"}
+              </h3>
+              <p className="text-sm">Repository</p>
+            </div>
+            <div>
+              <h3 className="text-2xl md:text-3xl font-bold">
+                {stats?.totalAuthors?.toLocaleString("id-ID") ?? "-"}
+              </h3>
+              <p className="text-sm">Penulis</p>
+            </div>
+            <div>
+              <h3 className="text-2xl md:text-3xl font-bold">
+                {stats?.totalUsers?.toLocaleString("id-ID") ?? "-"}
+              </h3>
+              <p className="text-sm">Pengguna</p>
+            </div>
+            <div>
+              <h3 className="text-2xl md:text-3xl font-bold">
+                {stats?.totalFiles?.toLocaleString("id-ID") ?? "-"}
+              </h3>
+              <p className="text-sm">Files</p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* KIRIMAN TERBARU & POPULER */}
       <section className="py-12 bg-white">

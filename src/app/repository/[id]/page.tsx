@@ -12,6 +12,9 @@ import {
   Eye,
   Quote,
   ArrowUp,
+  Share2,
+  Link as LinkIcon,
+  Check,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { RepositoryDetail } from "@/types";
@@ -26,6 +29,7 @@ const fetcher = (url: string) =>
 export default function RepositoryDetailPage() {
   const params = useParams();
   const id = params.id as string;
+  const [copied, setCopied] = useState(false);
 
   const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}api/repository-items/${id}`;
   const { data: item, error, isLoading } = useSWR<RepositoryDetail>(id ? apiUrl : null, fetcher);
@@ -182,6 +186,13 @@ export default function RepositoryDetailPage() {
                 </div>
               </li>
               <li className="flex items-start gap-3">
+                <UserCircle className="h-5 w-5 text-indigo-600 mt-1" />
+                <div>
+                  <strong className="block text-gray-700">Penguji:</strong>
+                  {item.secondAdvisor?.name || "-"}
+                </div>
+              </li>
+              <li className="flex items-start gap-3">
                 <Calendar className="h-5 w-5 text-indigo-600 mt-1" />
                 <div>
                   <strong className="block text-gray-700">Tanggal Terbit:</strong>
@@ -233,6 +244,40 @@ export default function RepositoryDetailPage() {
                   </button>
                 </div>
               )}
+            </div>
+
+            {/* SHARE */}
+            <div className="border-t pt-4">
+              <h4 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-1">
+                <Share2 size={14} /> Bagikan
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(item.title + ' ' + window.location.href)}`, '_blank')}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs bg-green-500 text-white rounded hover:bg-green-600 transition"
+                >
+                  WhatsApp
+                </button>
+                <button
+                  onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank')}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                >
+                  Facebook
+                </button>
+                <button
+                  onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(item.title)}&url=${encodeURIComponent(window.location.href)}`, '_blank')}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs bg-black text-white rounded hover:bg-gray-800 transition"
+                >
+                  X
+                </button>
+                <button
+                  onClick={() => { navigator.clipboard.writeText(window.location.href).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }); }}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition"
+                >
+                  {copied ? <Check size={12} /> : <LinkIcon size={12} />}
+                  {copied ? 'Tersalin' : 'Salin'}
+                </button>
+              </div>
             </div>
           </div>
         </aside>

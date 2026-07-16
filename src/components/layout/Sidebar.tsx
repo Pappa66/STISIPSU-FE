@@ -16,6 +16,7 @@ import {
   User,
   UserRound,
   FileText,
+  Link2,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
@@ -34,6 +35,7 @@ const navItems = {
     { href: "/dashboard/announcements", label: "Pengumuman", icon: Speaker },
     { href: "/dashboard/menu", label: "Menu", icon: LayoutDashboard },
     { href: "/dashboard/contact", label: "Kontak", icon: PhoneCall },
+    { href: "/dashboard/footer", label: "Footer", icon: Link2 },
     { href: "/dashboard/repository", label: "Repository", icon: BookOpen },
   ],
   MAHASISWA: [

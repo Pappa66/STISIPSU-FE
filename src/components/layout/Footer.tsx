@@ -89,66 +89,64 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Dynamic Tautan / Contact */}
-          {dynamicSections.length > 0 ? (
-            dynamicSections.map((section) => (
-              <div key={section.title} className="space-y-4">
-                <h3 className="text-white font-semibold bg-blue-600 inline-block px-3 py-1 rounded text-sm lg:text-base">
-                  {section.title}
-                </h3>
-                <ul className="space-y-2 text-sm lg:text-base">
-                  {section.links.map((link) => (
-                    <li key={link.label}>
-                      <a
-                        href={link.url || "#"}
-                        target={link.isExternal ? "_blank" : "_self"}
-                        rel={link.isExternal ? "noopener noreferrer" : undefined}
-                        className="flex items-center gap-2 hover:text-blue-300 transition-colors group"
-                      >
-                        {link.label}
-                        {link.isExternal && (
-                          <ExternalLink
-                            size={14}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity"
-                          />
-                        )}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))
-          ) : (
-            <div className="space-y-4">
+          {/* Dynamic sections from admin */}
+          {dynamicSections.map((section) => (
+            <div key={section.title} className="space-y-4">
               <h3 className="text-white font-semibold bg-blue-600 inline-block px-3 py-1 rounded text-sm lg:text-base">
-                Kontak
+                {section.title}
               </h3>
               <ul className="space-y-2 text-sm lg:text-base">
-                {kontak?.alamat && (
-                  <li className="flex items-start gap-2">
-                    <MapPin size={16} className="mt-0.5 shrink-0" />
-                    <span>{kontak.alamat}</span>
+                {section.links.map((link, i) => (
+                  <li key={i}>
+                    <a
+                      href={link.url || "#"}
+                      target={link.isExternal ? "_blank" : "_self"}
+                      rel={link.isExternal ? "noopener noreferrer" : undefined}
+                      className="flex items-center gap-2 hover:text-blue-300 transition-colors group"
+                    >
+                      {link.label}
+                      {link.isExternal && (
+                        <ExternalLink
+                          size={14}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        />
+                      )}
+                    </a>
                   </li>
-                )}
-                {kontak?.telepon && (
-                  <li className="flex items-center gap-2">
-                    <Phone size={16} className="shrink-0" />
-                    <span>{kontak.telepon}</span>
-                  </li>
-                )}
-                {kontak?.email && (
-                  <li className="flex items-center gap-2">
-                    <Mail size={16} className="shrink-0" />
-                    <span>{kontak.email}</span>
-                  </li>
-                )}
+                ))}
               </ul>
             </div>
-          )}
+          ))}
         </div>
 
+        {/* Contact Info Row */}
+        {(kontak?.alamat || kontak?.telepon || kontak?.email) && (
+          <div className="mt-8 pt-6 border-t border-gray-600">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-sm text-gray-400">
+              {kontak?.alamat && (
+                <div className="flex items-center gap-2 text-center sm:text-left">
+                  <MapPin size={16} className="shrink-0 text-blue-400" />
+                  <span>{kontak.alamat}</span>
+                </div>
+              )}
+              {kontak?.telepon && (
+                <div className="flex items-center gap-2">
+                  <Phone size={16} className="shrink-0 text-blue-400" />
+                  <span>{kontak.telepon}</span>
+                </div>
+              )}
+              {kontak?.email && (
+                <div className="flex items-center gap-2">
+                  <Mail size={16} className="shrink-0 text-blue-400" />
+                  <span>{kontak.email}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Bottom Copyright */}
-        <div className="mt-8 lg:mt-10 pt-6 border-t border-gray-600 text-center">
+        <div className="mt-6 pt-6 border-t border-gray-600 text-center">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-400">
             <p>
               &copy; {new Date().getFullYear()} STISIP Syamsul Ulum Sukabumi.

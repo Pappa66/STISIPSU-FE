@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useAuthStore } from "@/store/authStore";
 import {
   ChevronDown, ChevronRight, BookOpen, Users, GraduationCap, Shield, FileText,
   Newspaper, Image, Speaker, LayoutDashboard, PhoneCall, Link2, UploadCloud,
@@ -582,13 +583,31 @@ function GuideSection({ section }: any) {
 }
 
 export default function PanduanPage() {
+  const { token } = useAuthStore();
   const [search, setSearch] = useState("");
+  const [role, setRole] = useState("ADMIN");
 
-  const filtered = search
-    ? sections.filter((s) =>
-        JSON.stringify(s).toLowerCase().includes(search.toLowerCase())
-      )
-    : sections;
+  useEffect(() => {
+    if (!token) return;
+    try {
+      const decoded = JSON.parse(atob(token.split(".")[1]));
+      setRole(decoded.role || "ADMIN");
+    } catch {}
+  }, [token]);
+
+  const roleSectionMap: Record<string, string[]> = {
+    ADMIN: sections.map((s) => s.id),
+    MAHASISWA: ["overview", "roles", "mahasiswa", "repository", "public", "media", "citation", "recommendations"],
+    DOSEN: ["overview", "roles", "dosen", "repository", "public", "media", "citation", "recommendations"],
+  };
+
+  const visibleIds = roleSectionMap[role] || roleSectionMap.ADMIN;
+
+  const filtered = sections
+    .filter((s) => visibleIds.includes(s.id))
+    .filter((s) =>
+      search ? JSON.stringify(s).toLowerCase().includes(search.toLowerCase()) : true
+    );
 
   return (
     <main className="px-4 sm:px-6 lg:px-8 py-6">

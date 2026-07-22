@@ -225,7 +225,7 @@ export default function Sidebar() {
           />
           {!collapsed && (
             <span className="text-lg font-bold tracking-wide leading-snug">
-              STISIP
+              STISIP SYAMSUL ULUM SUKABUMI
             </span>
           )}
         </div>

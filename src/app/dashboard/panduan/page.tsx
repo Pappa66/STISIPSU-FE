@@ -597,8 +597,8 @@ export default function PanduanPage() {
 
   const roleSectionMap: Record<string, string[]> = {
     ADMIN: sections.map((s) => s.id),
-    MAHASISWA: ["overview", "roles", "mahasiswa", "repository", "public", "media", "citation", "recommendations"],
-    DOSEN: ["overview", "roles", "dosen", "repository", "public", "media", "citation", "recommendations"],
+    MAHASISWA: ["overview", "mahasiswa", "repository", "public", "citation"],
+    DOSEN: ["overview", "dosen", "repository", "public", "citation"],
   };
 
   const visibleIds = roleSectionMap[role] || roleSectionMap.ADMIN;

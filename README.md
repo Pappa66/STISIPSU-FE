@@ -2,6 +2,9 @@
 
 Next.js frontend for STISIP Syamsul Ulum Sukabumi.
 
+Dual-mode deployment: **VPS** (PM2 + Nginx) atau **Vercel** — tanpa perubahan kode. \
+Awalnya berjalan di VPS (`145.79.8.29:3000`), lalu dimigrasi ke Vercel.
+
 ## Setup
 
 ```bash

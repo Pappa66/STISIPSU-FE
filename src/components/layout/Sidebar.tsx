@@ -7,6 +7,7 @@ import {
   BookCopy,
   BookOpen,
   GraduationCap,
+  Home,
   Image,
   LayoutDashboard,
   LogOut,
@@ -43,6 +44,12 @@ interface NavGroup {
 
 const navGroups: Record<string, NavGroup[]> = {
   ADMIN: [
+    {
+      label: "Utama",
+      items: [
+        { href: "/dashboard", label: "Beranda", icon: Home },
+      ],
+    },
     {
       label: "Manajemen Pengguna",
       items: [
@@ -90,19 +97,43 @@ const navGroups: Record<string, NavGroup[]> = {
   ],
   MAHASISWA: [
     {
+      label: "Utama",
+      items: [
+        { href: "/dashboard", label: "Beranda", icon: Home },
+      ],
+    },
+    {
       label: "Fitur Utama",
       items: [
         { href: "/dashboard/my-repository", label: "Repository Saya", icon: UploadCloud },
         { href: "/dashboard/profile", label: "Profil", icon: User },
       ],
     },
+    {
+      label: "Bantuan",
+      items: [
+        { href: "/dashboard/panduan", label: "Panduan", icon: BookCopy },
+      ],
+    },
   ],
   DOSEN: [
+    {
+      label: "Utama",
+      items: [
+        { href: "/dashboard", label: "Beranda", icon: Home },
+      ],
+    },
     {
       label: "Fitur Utama",
       items: [
         { href: "/dashboard/advising", label: "Bimbingan", icon: GraduationCap },
         { href: "/dashboard/profile", label: "Profil", icon: User },
+      ],
+    },
+    {
+      label: "Bantuan",
+      items: [
+        { href: "/dashboard/panduan", label: "Panduan", icon: BookCopy },
       ],
     },
   ],

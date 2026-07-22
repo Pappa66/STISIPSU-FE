@@ -177,6 +177,7 @@ const UploadModal = ({
     submissionData.append("year", formData.year);
     submissionData.append("author", formatAuthorName(prereqs.studentName));
     submissionData.append("studyProgram", prereqs.studyProgram || "");
+    submissionData.append("category", formData.category);
 
     if (formData.gdriveLink) {
       submissionData.append("gdriveLink", formData.gdriveLink);

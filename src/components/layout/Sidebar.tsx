@@ -264,7 +264,9 @@ export default function Sidebar() {
               <div className={collapsed ? "space-y-1" : "space-y-0.5"}>
                 {group.items.map((item) => {
                   const Icon = item.icon;
-                  const isActive = pathname.startsWith(item.href);
+                  const isActive = item.href === "/dashboard"
+                    ? pathname === "/dashboard"
+                    : pathname.startsWith(item.href);
                   const linkContent = (
                     <>
                       <Icon className={clsx("shrink-0", collapsed ? "h-5 w-5" : "h-4.5 w-4.5", isActive ? "text-sky-600" : "text-gray-400")} />

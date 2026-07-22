@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import useSWR from "swr";
 import {
-  BookCopy, FileText, GraduationCap, Upload,
+  BookCopy, FileText, GraduationCap, Upload, Activity,
 } from "lucide-react";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
@@ -69,6 +69,11 @@ export default function DashboardPage() {
 
   const { data: myStudents } = useSWR(
     userRole === "DOSEN" ? `${process.env.NEXT_PUBLIC_API_URL}api/advisor/students` : null,
+    (url: string) => fetch(url, { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json())
+  );
+
+  const { data: activityLogs } = useSWR(
+    userRole ? `${process.env.NEXT_PUBLIC_API_URL}api/activity-logs?limit=5` : null,
     (url: string) => fetch(url, { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json())
   );
 
@@ -206,6 +211,34 @@ export default function DashboardPage() {
               <MiniStat icon={BookCopy} label="Perlu Review" value={myStudents?.filter((s: any) => s._count?.repositoryItems > 0)?.length || 0} color="text-amber-600" />
             </div>
           )}
+
+          {/* AKTIVITAS TERBARU — all roles */}
+          <div className="mt-8">
+            <h3 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <Activity size={18} /> Aktivitas Terbaru
+            </h3>
+            <div className="bg-gray-50 rounded-xl border divide-y">
+              {!activityLogs ? (
+                <p className="p-4 text-sm text-gray-400">Memuat...</p>
+              ) : activityLogs.logs?.length === 0 ? (
+                <p className="p-4 text-sm text-gray-400">Belum ada aktivitas.</p>
+              ) : (
+                activityLogs.logs.map((log: any) => (
+                  <div key={log.id} className="flex items-center justify-between p-3 text-sm">
+                    <div className="flex-1 min-w-0">
+                      <p className="truncate font-medium">
+                        <span className="text-xs font-semibold text-gray-500 uppercase mr-2">{log.action}</span>
+                        {log.entity}
+                        {log.details?.title && <span className="text-gray-600"> — {log.details.title}</span>}
+                        {log.details?.name && <span className="text-gray-600"> — {log.details.name}</span>}
+                      </p>
+                      <p className="text-xs text-gray-500">{new Date(log.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </main>

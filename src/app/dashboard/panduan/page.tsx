@@ -115,6 +115,17 @@ const sections = [
         ],
       },
       {
+        title: "Hero — Area Pendaftaran di Bawah Banner",
+        icon: LayoutDashboard,
+        desc: "Mengatur konten area promosi pendaftaran mahasiswa baru yang tampil di bawah banner slider.",
+        fields: [
+          "Judul, Subjudul, Deskripsi — teks promosi",
+          "Gambar — upload gambar atau gunakan URL",
+          "Link & Teks Tombol — tautan ke PMB eksternal",
+          "Toggle Aktif: tampilkan/sembunyikan section ini",
+        ],
+      },
+      {
         title: "Galeri — Kelola Galeri Foto",
         icon: GalleryVertical,
         desc: "Mengelola koleksi foto kegiatan kampus.",

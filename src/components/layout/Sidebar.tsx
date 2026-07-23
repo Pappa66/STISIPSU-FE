@@ -23,6 +23,7 @@ import {
   PanelLeftClose,
   PanelRightOpen,
   Camera,
+  Calendar,
   Megaphone,
   MenuIcon,
   Notebook,
@@ -80,6 +81,7 @@ const navGroups: Record<string, NavGroup[]> = {
       label: "Fitur Utama",
       items: [
         { href: "/dashboard/repository", label: "Repository", icon: BookOpen },
+        { href: "/dashboard/kalender", label: "Kalender", icon: Calendar },
       ],
     },
     {

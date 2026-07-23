@@ -5,6 +5,8 @@ Next.js frontend for STISIP Syamsul Ulum Sukabumi.
 Dual-mode deployment: **VPS** (PM2 + Nginx) atau **Vercel** — tanpa perubahan kode. \
 Awalnya berjalan di VPS (`145.79.8.29:3000`), lalu dimigrasi ke Vercel.
 
+> Panduan deploy lengkap (Vercel + VPS) ada di `DEPLOY.md` di root proyek.
+
 ## Setup
 
 ```bash
@@ -17,76 +19,25 @@ npm run dev
 
 | Variable | Wajib | Kegunaan |
 |---|---|---|
-| `NEXT_PUBLIC_API_URL` | Ya | Backend base URL, contoh: `https://stisipsu-be.vercel.app/` |
+| `NEXT_PUBLIC_API_URL` | Ya | Backend base URL, contoh: `https://api.stisipsu.ac.id/` |
 
-## Deploy ke VPS (Ubuntu/Debian)
+## Deploy
 
-### 1. Build
+Panduan deploy lengkap (Vercel + VPS) ada di `DEPLOY.md` di root proyek.
 
+### Vercel (Production)
+Push ke `main`, Vercel auto-deploy. Pastikan `NEXT_PUBLIC_API_URL` terisi di dashboard Vercel.
+
+### VPS (Alternatif)
 ```bash
 git clone https://github.com/Pappa66/STISIPSU-FE.git /var/www/fe
-cd /var/www/fe
-npm install
+cd /var/www/fe && npm install
 nano .env.local   # isi NEXT_PUBLIC_API_URL
 npm run build
+pm2 start node_modules/.bin/next --name stisip-fe -- start -p 3000 && pm2 save && pm2 startup
 ```
 
-### 2. PM2 untuk next start
-
+### Update
 ```bash
-npm install -g pm2
-pm2 start node_modules/.bin/next --name stisip-fe -- start -p 3000
-pm2 save
-pm2 startup
+git pull origin main && npm install && npm run build && pm2 restart stisip-fe
 ```
-
-### 3. Nginx
-
-```nginx
-server {
-    listen 80;
-    server_name stisipsu.ac.id www.stisipsu.ac.id;
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-    }
-
-    location /_next/static {
-        alias /var/www/fe/.next/static;
-        expires 365d;
-        access_log off;
-    }
-
-    location /images {
-        alias /var/www/fe/public/images;
-        expires 30d;
-    }
-}
-```
-
-### 4. SSL
-
-```bash
-sudo apt install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d stisipsu.ac.id -d www.stisipsu.ac.id
-```
-
-### 5. Update
-
-```bash
-git pull origin main
-npm install
-npm run build
-pm2 restart stisip-fe
-```
-## Deploy ke Vercel
-
-Push ke `main`, Vercel auto-deploy.

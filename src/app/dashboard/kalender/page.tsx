@@ -3,9 +3,11 @@
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
 import { fetchWithAuth } from "@/utils/api";
+import { useAuthStore } from "@/store/authStore";
 import { toast } from "react-hot-toast";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
-import { Plus, Trash2, Edit3, Calendar, Clock } from "lucide-react";
+import { Plus, Trash2, Edit3, Calendar, Info } from "lucide-react";
+import { useMemo } from "react";
 
 interface CalendarEvent {
   id: string;
@@ -29,9 +31,13 @@ const TYPE_OPTIONS = [
   { value: "other", label: "Lainnya", color: "#6c757d" },
 ];
 
-const MONTHS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
-
 export default function KalenderPage() {
+  const { token } = useAuthStore();
+  const role = useMemo(() => {
+    if (!token) return null;
+    try { return JSON.parse(atob(token.split(".")[1])).role; } catch { return null; }
+  }, [token]);
+  const isAdmin = role === "ADMIN";
   const { data: events, isLoading } = useSWR<CalendarEvent[]>(`${apiUrl}/admin/all`, fetcher);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<CalendarEvent | null>(null);
@@ -122,13 +128,15 @@ export default function KalenderPage() {
         <div className="bg-white shadow-md rounded-xl p-6">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold">Kalender Pendidikan</h1>
-            <button onClick={() => { resetForm(); setShowForm(true); }}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-              <Plus size={18} /> Tambah Event
-            </button>
+            {isAdmin && (
+              <button onClick={() => { resetForm(); setShowForm(true); }}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                <Plus size={18} /> Tambah Event
+              </button>
+            )}
           </div>
 
-          {showForm && (
+          {isAdmin && showForm && (
             <form onSubmit={handleSubmit} className="mb-8 p-4 border rounded-lg bg-gray-50">
               <h2 className="font-semibold mb-4">{editing ? "Edit Event" : "Event Baru"}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -158,13 +166,29 @@ export default function KalenderPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Warna</label>
-                  <input type="color" value={form.color} onChange={(e) => setForm({...form, color: e.target.value})}
-                    className="w-full h-[38px] px-1 border rounded-md cursor-pointer" />
+                  <div className="flex items-center gap-2">
+                    <input type="color" value={form.color} onChange={(e) => setForm({...form, color: e.target.value})}
+                      className="w-9 h-9 p-0.5 border rounded-md cursor-pointer" />
+                    <span className="text-xs text-gray-500">{form.color}</span>
+                  </div>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium mb-1">Deskripsi</label>
                   <textarea rows={3} value={form.description} onChange={(e) => setForm({...form, description: e.target.value})}
-                    className="w-full px-3 py-2 border rounded-md text-sm" />
+                    className="w-full px-3 py-2 border rounded-md text-sm" placeholder="Contoh: Libur semester ganjil, Ujian Tengah Semester, dll." />
+                </div>
+                <div className="md:col-span-2 bg-blue-50 border border-blue-200 rounded-md p-3 flex items-start gap-2">
+                  <Info size={16} className="text-blue-500 mt-0.5 flex-shrink-0" />
+                  <div className="text-xs text-blue-700">
+                    <p className="font-medium mb-1">Panduan Pengisian Kalender:</p>
+                    <ul className="list-disc list-inside space-y-0.5">
+                      <li><strong>Akademi</strong> — kegiatan perkuliahan, seminar, workshop</li>
+                      <li><strong>Libur</strong> — hari libur nasional, cuti bersama, libur semester</li>
+                      <li><strong>Ujian</strong> — UTS, UAS, ujian skripsi, sidang</li>
+                      <li><strong>Pendaftaran</strong> — jadwal pendaftaran mahasiswa baru, KP, dll</li>
+                      <li>Event akan tampil di halaman publik <strong>/kalender</strong> dan dashboard dosen/mahasiswa</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
               <div className="flex gap-2 mt-4">
@@ -179,7 +203,7 @@ export default function KalenderPage() {
           )}
 
           {!events || events.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">Belum ada event. Klik "Tambah Event" untuk mulai.</p>
+            <p className="text-gray-500 text-center py-8">Belum ada event kalender.</p>
           ) : (
             <div className="space-y-2">
               {[...events].sort((a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime()).map((ev) => (
@@ -198,22 +222,30 @@ export default function KalenderPage() {
                       </span>
                     </p>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <button onClick={() => toggleActive(ev.id, ev.isActive)}
-                      className={`p-1.5 rounded text-xs ${ev.isActive ? "text-green-600 hover:bg-green-50" : "text-gray-400 hover:bg-gray-100"}`}>
-                      {ev.isActive ? "Aktif" : "Nonaktif"}
-                    </button>
-                    <button onClick={() => openEdit(ev)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded">
-                      <Edit3 size={15} />
-                    </button>
-                    <button onClick={() => handleDelete(ev.id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded">
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
+                  {isAdmin && (
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => toggleActive(ev.id, ev.isActive)}
+                        className={`p-1.5 rounded text-xs ${ev.isActive ? "text-green-600 hover:bg-green-50" : "text-gray-400 hover:bg-gray-100"}`}>
+                        {ev.isActive ? "Aktif" : "Nonaktif"}
+                      </button>
+                      <button onClick={() => openEdit(ev)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded">
+                        <Edit3 size={15} />
+                      </button>
+                      <button onClick={() => handleDelete(ev.id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded">
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           )}
+        </div>
+
+        <div className="mt-4 text-center">
+          <a href="/kalender" target="_blank" className="text-sm text-blue-600 hover:text-blue-800 underline">
+            Lihat tampilan publik →
+          </a>
         </div>
       </div>
     </main>

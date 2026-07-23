@@ -108,6 +108,7 @@ const navGroups: Record<string, NavGroup[]> = {
       label: "Fitur Utama",
       items: [
         { href: "/dashboard/my-repository", label: "Repository Saya", icon: UploadCloud },
+        { href: "/dashboard/kalender", label: "Kalender", icon: Calendar },
         { href: "/dashboard/profile", label: "Profil", icon: User },
       ],
     },
@@ -129,6 +130,7 @@ const navGroups: Record<string, NavGroup[]> = {
       label: "Fitur Utama",
       items: [
         { href: "/dashboard/advising", label: "Bimbingan", icon: GraduationCap },
+        { href: "/dashboard/kalender", label: "Kalender", icon: Calendar },
         { href: "/dashboard/profile", label: "Profil", icon: User },
       ],
     },

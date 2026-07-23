@@ -10,6 +10,7 @@ import {
   Trash2, Edit, CheckCircle, XCircle, Clock, Eye, EyeOff, Download,
   GalleryVertical, Home, ArrowLeft, Globe, Lock, UserCheck, FileUp,
   Ruler, Quote, Lightbulb, FileImage, ChevronRight as ChevronRightIcon,
+  Calendar, Plus,
 } from "lucide-react";
 
 const sections = [
@@ -383,6 +384,33 @@ const sections = [
     ],
   },
   {
+    id: "kalender",
+    title: "Kalender Pendidikan",
+    icon: Calendar,
+    children: [
+      {
+        title: "Akses Kalender",
+        icon: Eye,
+        desc: "Semua pengguna (Admin, Dosen, Mahasiswa) dapat melihat kalender pendidikan melalui menu sidebar 'Kalender'. Admin dapat menambah, mengedit, dan menghapus event.",
+      },
+      {
+        title: "Tipe Event",
+        icon: BookOpen,
+        desc: "Terdapat 5 tipe event: Akademik (biru), Libur (merah), Ujian (oranye), Pendaftaran (hijau), dan Lainnya (abu-abu). Warna membantu membedakan jenis kegiatan secara visual.",
+      },
+      {
+        title: "Cara Menambah Event (Admin)",
+        icon: Plus,
+        desc: "Klik 'Tambah Event', isi judul, pilih tanggal, tipe event, dan warna. Jika event berlangsung beberapa hari, isi tanggal selesai. Event akan langsung tampil di halaman publik /kalender.",
+      },
+      {
+        title: "Tampilan Publik",
+        icon: Globe,
+        desc: "Halaman /kalender menampilkan grid bulanan dengan navigasi antar bulan. Klik tanggal tertentu untuk melihat detail event pada hari itu.",
+      },
+    ],
+  },
+  {
     id: "recommendations",
     title: "Rekomendasi & Rencana Pengembangan",
     icon: Lightbulb,
@@ -597,8 +625,8 @@ export default function PanduanPage() {
 
   const roleSectionMap: Record<string, string[]> = {
     ADMIN: sections.map((s) => s.id),
-    MAHASISWA: ["overview", "mahasiswa", "repository", "public", "citation"],
-    DOSEN: ["overview", "dosen", "repository", "public", "citation"],
+    MAHASISWA: ["overview", "mahasiswa", "repository", "public", "kalender", "citation"],
+    DOSEN: ["overview", "dosen", "repository", "public", "kalender", "citation"],
   };
 
   const visibleIds = roleSectionMap[role] || roleSectionMap.ADMIN;

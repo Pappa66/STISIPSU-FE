@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import OptimizedImage from '@/components/common/OptimizedImage';
 import AnimatedSection from '@/components/common/AnimatedSection';
-import { User, Calendar, ArrowRight } from "lucide-react";
+import LoadingSpinner from '@/components/common/LoadingSpinner';
+import { User, Calendar, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import useSWR from "swr";
 import BannerSlider from "./BannerSlider";
 
@@ -22,6 +23,8 @@ interface HeroData {
 }
 
 export default function HeroSection() {
+  const [beritaIdx, setBeritaIdx] = useState(0);
+
   const { data: berita, isLoading: beritaLoading } = useSWR<{
     news: NewsItem[];
   }>(`${process.env.NEXT_PUBLIC_API_URL}api/public/news`, fetcher);
@@ -35,6 +38,13 @@ export default function HeroSection() {
     `${process.env.NEXT_PUBLIC_API_URL}api/public/hero`,
     fetcher
   );
+
+  const sortedNews = useMemo(() => {
+    if (!berita?.news) return [];
+    return [...berita.news]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 5);
+  }, [berita]);
 
   return (
     <>
@@ -84,56 +94,59 @@ export default function HeroSection() {
             <div className="flex-grow border-t-4 border-sky-700"></div>
           </div>
 
-          {beritaLoading && <p className="text-gray-500">Memuat berita...</p>}
-
-          {berita?.news?.length ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {berita.news
-                .sort(
-                  (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                )
-                .slice(0, 3)
-                .map((item) => (
-                  <Link
-                    key={item.id}
-                    href={`/berita/${item.slug}`}
-                    className="block rounded-lg border border-gray-200 overflow-hidden shadow hover:shadow-lg transition group bg-white"
-                  >
-                    <div className="relative h-48 w-full">
-                      <OptimizedImage
-                        src={item.featuredImageUrl || "https://placehold.co/600x400?text=Berita"}
-                        alt={item.title}
-                        fill
-                      />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-bold text-gray-800 group-hover:text-sky-700 mb-2">
-                        {item.title}
-                      </h3>
-                      <div className="mt-2 flex items-center space-x-3 text-xs text-gray-500">
-                        <div className="flex items-center gap-1.5">
-                          <User size={12} />
-                          <span>{item.author?.name}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Calendar size={12} />
-                          <span>
-                            {new Date(item.createdAt).toLocaleDateString(
-                              "id-ID",
-                              {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                              }
-                            )}
+          {beritaLoading ? (
+            <div className="flex justify-center py-8"><LoadingSpinner /></div>
+          ) : sortedNews.length > 0 ? (
+            <div className="relative">
+              <div className="overflow-hidden rounded-xl border border-gray-200">
+                <div className="flex transition-transform duration-500 ease-in-out"
+                  style={{ transform: `translateX(-${beritaIdx * 100}%)` }}>
+                  {sortedNews.map((item) => (
+                    <Link key={item.id} href={`/berita/${item.slug}`}
+                      className="min-w-full group block bg-white">
+                      <div className="relative aspect-video sm:aspect-[21/9] w-full">
+                        <OptimizedImage
+                          src={item.featuredImageUrl || "https://placehold.co/600x400?text=Berita"}
+                          alt={item.title}
+                          fill
+                          className="rounded-t-md"
+                        />
+                      </div>
+                      <div className="p-4 sm:p-6">
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-800 group-hover:text-sky-700 mb-2 line-clamp-2">
+                          {item.title}
+                        </h3>
+                        <div className="flex items-center gap-3 text-xs text-gray-500">
+                          <span className="flex items-center gap-1"><User size={12} />{item.author?.name}</span>
+                          <span className="flex items-center gap-1"><Calendar size={12} />
+                            {new Date(item.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
                           </span>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+              {sortedNews.length > 1 && (
+                <div className="flex items-center justify-center gap-3 mt-4">
+                  <button onClick={() => setBeritaIdx(i => Math.max(0, i - 1))}
+                    disabled={beritaIdx === 0}
+                    className="p-2 rounded-full border hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition">
+                    <ChevronLeft size={18} />
+                  </button>
+                  <div className="flex gap-2">
+                    {sortedNews.map((_, i) => (
+                      <button key={i} onClick={() => setBeritaIdx(i)}
+                        className={`w-2.5 h-2.5 rounded-full transition ${i === beritaIdx ? "bg-sky-600" : "bg-gray-300 hover:bg-gray-400"}`} />
+                    ))}
+                  </div>
+                  <button onClick={() => setBeritaIdx(i => Math.min(sortedNews.length - 1, i + 1))}
+                    disabled={beritaIdx === sortedNews.length - 1}
+                    className="p-2 rounded-full border hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition">
+                    <ChevronRight size={18} />
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <p className="text-gray-500">Tidak ada berita terbaru.</p>
@@ -152,7 +165,7 @@ export default function HeroSection() {
             <div className="flex-grow border-t-4 border-sky-700"></div>
           </div>
 
-          {galeriLoading && <p className="text-gray-500">Memuat galeri...</p>}
+          {galeriLoading && <div className="flex justify-center py-8"><LoadingSpinner /></div>}
 
           {galeri?.length ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

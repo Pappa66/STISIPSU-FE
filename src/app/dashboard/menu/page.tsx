@@ -342,11 +342,16 @@ export default function MenuManagementPage() {
                           />
                         ))}
                       </SortableContext>
+                      {item.type !== "STATIC_PATH" && item.type !== "EXTERNAL" ? (
                       <button
                         onClick={() => handleCreateMenu(true, item.id)}
                         className="flex items-center gap-2 bg-sky-700 text-white px-3 py-1 rounded font-semibold hover:bg-sky-800"
                       >
                         <Plus size={14} /> Tambah Sub Menu
+                      </button>
+                      ) : (
+                      <p className="text-[11px] text-gray-400 italic px-1">Menu {item.type === "STATIC_PATH" ? "path statis" : "eksternal"} tidak bisa punya sub menu</p>
+                      )}
                       </button>
                     </div>
                   </div>

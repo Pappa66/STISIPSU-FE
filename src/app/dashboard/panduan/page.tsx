@@ -162,6 +162,7 @@ const sections = [
         ],
         details: [
           "Menu yang memiliki sub menu otomatis menjadi Menu Induk (kategori). Menu induk tidak bisa memiliki link — klik pada nama menu di navigasi akan membuka sub menu pertama. Hanya nama & ikon yang bisa diedit pada menu induk.",
+          "Hanya menu tipe Halaman Internal yang bisa memiliki sub menu. Menu Path Statis dan Link Eksternal tidak bisa ditambahi sub menu.",
           "Ada 3 jenis link untuk menu tanpa sub menu:",
         ],
         linkTypes: [

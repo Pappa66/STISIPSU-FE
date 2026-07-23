@@ -103,9 +103,8 @@ const sections = [
           "Cari: filter berdasarkan judul",
         ],
         details: [
-          "Featured Image: gambar utama berita. Di halaman detail, gambar ditampilkan tanpa crop paksa — landscape & portrait ditampilkan proporsional dengan batas tinggi maksimal 70% layar.",
-          "Galeri Gambar: jika berita mengandung beberapa gambar (featured + inline), semua gambar bisa dijelajahi dengan tombol panah kiri/kanan dan indikator titik di bagian atas halaman detail.",
-          "Klik gambar untuk membuka lightbox layar penuh. Navigasi dengan panah atau klik titik indikator.",
+          "Featured Image standar: 1200×630 px (landscape) atau 600×800 px (portrait). Ukuran tak sesuai tetap bisa upload tapi akan tampil kurang rapi. Rencana: validasi ukuran otomatis dengan notifikasi ke admin jika dimensi tidak sesuai standar.",
+          "Judul maksimal 2 baris (line-clamp-2) di card listing. Kelebihan teks akan dipotong dengan ellipsis (...)",
         ],
       },
       {
@@ -344,7 +343,14 @@ const sections = [
       {
         title: "Featured Image Berita",
         icon: Newspaper,
-        desc: "Ukuran ideal: 1200 × 630 px (landscape) atau 600 × 800 px (portrait). Format JPG/PNG/WebP. Maksimal 500 KB. Di halaman detail, gambar ditampilkan tanpa crop — landscape lebar penuh & portrait dibatasi tinggi 70% layar. Semua gambar dalam berita bisa dijelajahi via galeri/lightbox.",
+        desc: "Ukuran WAJIB disamakan sebelum upload:",
+        details: [
+          "Standar landscape: 1200 × 630 px (rasio ~1.9:1). Format JPG/WebP. Maks 300 KB.",
+          "Alternatif portrait: 600 × 800 px (rasio 3:4). Format JPG/PNG/WebP. Maks 400 KB.",
+          "Di halaman detail, gambar ditampilkan tanpa crop paksa — landscape lebar penuh, portrait dibatasi tinggi 70% layar, menggunakan object-contain.",
+          "Jika ukuran tidak sesuai standar, gambar tetap bisa diupload (untuk konten yang sudah ada) namun akan muncul notifikasi peringatan di dashboard admin.",
+          "Rencana: ke depannya upload akan ditolak otomatis jika dimensi tidak sesuai standar.",
+        ],
       },
       {
         title: "Galeri Foto",

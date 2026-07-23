@@ -50,23 +50,23 @@ export default function BeritaListClient({ news }: { news: NewsItem[] }) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayedNews.map((article, index) => (
-            <AnimatedSection key={article.id} direction="up" delay={index * 0.05}>
+            <AnimatedSection key={article.id} direction="up" delay={index * 0.05} className="h-full">
             <Link
               href={`/berita/${article.slug}`}
-              className="group block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow duration-300"
+              className="group block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow duration-300 h-full flex flex-col"
             >
               <OptimizedImage
                 src={article.featuredImageUrl || "https://placehold.co/600x400?text=Berita"}
                 alt={article.title}
                 width={600}
                 height={400}
-                className="w-full h-48 object-cover"
+                className="w-full h-48 object-cover shrink-0"
               />
-              <div className="p-6">
-                <h4 className="text-lg font-bold text-gray-900 group-hover:text-blue-700 transition-colors duration-300">
+              <div className="p-6 flex flex-col flex-1">
+                <h4 className="text-lg font-bold text-gray-900 group-hover:text-blue-700 transition-colors duration-300 line-clamp-2">
                   {article.title}
                 </h4>
-                <div className="mt-4 flex items-center space-x-4 text-xs text-gray-500">
+                <div className="mt-auto pt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
                   <div className="flex items-center gap-1.5">
                     <User size={12} />
                     <span>{article.author.name}</span>

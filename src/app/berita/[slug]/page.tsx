@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Calendar, User, Tag, ArrowLeft, Share2, Link as LinkIcon, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, User, Tag, ArrowLeft, Share2, Link as LinkIcon, Check } from "lucide-react";
 import { Img } from '@/components/common/OptimizedImage';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 
@@ -20,8 +20,6 @@ export default function DetailBeritaPage() {
   const [data, setData] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [galleryIdx, setGalleryIdx] = useState(0);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const slug = typeof params.slug === "string" ? params.slug : params.slug?.[0];
 
@@ -44,25 +42,6 @@ export default function DetailBeritaPage() {
 
     fetchData();
   }, [slug]);
-
-  const allImages = (() => {
-    if (!data) return [];
-    const result: { src: string; alt: string }[] = [];
-    if (data.featuredImageUrl) {
-      result.push({ src: data.featuredImageUrl, alt: data.title });
-    }
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
-    for (const b of data.blocks || []) {
-      if (b.type === "image") {
-        const src = b.url?.startsWith("http") ? b.url : `${baseUrl}${b.url}`;
-        const alt = b.caption || data.title;
-        if (!result.some((img) => img.src === src)) {
-          result.push({ src, alt });
-        }
-      }
-    }
-    return result;
-  })();
 
   if (loading)
     return (
@@ -124,49 +103,13 @@ export default function DetailBeritaPage() {
             </div>
           </div>
 
-          {allImages.length > 0 && (
-            <div className="mb-6">
-              <div
-                className="relative w-full max-w-[600px] mx-auto bg-gray-100 rounded-md shadow overflow-hidden cursor-pointer"
-                style={{ minHeight: 200 }}
-                onClick={() => setLightboxOpen(true)}
-              >
-                <Img
-                  src={allImages[galleryIdx].src}
-                  alt={allImages[galleryIdx].alt}
-                  className="w-full h-auto max-h-[70vh] object-contain mx-auto"
-                />
-                {allImages.length > 1 && (
-                  <>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setGalleryIdx((i) => (i === 0 ? allImages.length - 1 : i - 1));
-                      }}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1.5 transition"
-                    >
-                      <ChevronLeft size={18} />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setGalleryIdx((i) => (i === allImages.length - 1 ? 0 : i + 1));
-                      }}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1.5 transition"
-                    >
-                      <ChevronRight size={18} />
-                    </button>
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
-                      {allImages.map((_, i) => (
-                        <span
-                          key={i}
-                          className={`block w-2 h-2 rounded-full transition ${i === galleryIdx ? "bg-white" : "bg-white/50"}`}
-                        />
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
+          {data.featuredImageUrl && (
+            <div className="w-full max-w-[600px] mx-auto mb-6 bg-gray-100 rounded-md overflow-hidden flex items-center justify-center" style={{ minHeight: 200 }}>
+              <Img
+                src={data.featuredImageUrl}
+                alt={data.title}
+                className="w-full h-auto max-h-[70vh] object-contain"
+              />
             </div>
           )}
 
@@ -188,56 +131,6 @@ export default function DetailBeritaPage() {
                   {tag}
                 </span>
               ))}
-            </div>
-          )}
-
-          {lightboxOpen && allImages.length > 0 && (
-            <div
-              className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
-              onClick={() => setLightboxOpen(false)}
-            >
-              <button
-                onClick={() => setLightboxOpen(false)}
-                className="absolute top-4 right-4 text-white bg-black/50 hover:bg-black/70 rounded-full p-2 transition z-10"
-              >
-                ✕
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setGalleryIdx((i) => (i === 0 ? allImages.length - 1 : i - 1));
-                }}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/70 rounded-full p-3 transition"
-              >
-                <ChevronLeft size={28} />
-              </button>
-              <img
-                src={allImages[galleryIdx].src}
-                alt={allImages[galleryIdx].alt}
-                className="max-w-[90vw] max-h-[90vh] object-contain"
-                onClick={(e) => e.stopPropagation()}
-              />
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setGalleryIdx((i) => (i === allImages.length - 1 ? 0 : i + 1));
-                }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white bg-black/50 hover:bg-black/70 rounded-full p-3 transition"
-              >
-                <ChevronRight size={28} />
-              </button>
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                {allImages.map((_, i) => (
-                  <span
-                    key={i}
-                    className={`block w-2.5 h-2.5 rounded-full transition cursor-pointer ${i === galleryIdx ? "bg-white" : "bg-white/40"}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setGalleryIdx(i);
-                    }}
-                  />
-                ))}
-              </div>
             </div>
           )}
 

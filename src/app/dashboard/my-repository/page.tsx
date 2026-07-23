@@ -378,13 +378,31 @@ const UploadModal = ({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 1. File Langsung (PDF)
               </label>
-              <input
-                type="file"
-                multiple
-                onChange={handleFileChange}
-                accept="application/pdf"
-                className="block w-full text-sm text-gray-500"
-              />
+              <div
+                onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-blue-500', 'bg-blue-50'); }}
+                onDragLeave={(e) => { e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50'); }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50');
+                  const droppedFiles = Array.from(e.dataTransfer.files).filter(f => f.type === 'application/pdf');
+                  const newFiles = droppedFiles.map(file => ({ file, alias: file.name.split('.').slice(0, -1).join('.') || file.name }));
+                  setFiles(prev => [...prev, ...newFiles]);
+                }}
+                onClick={() => document.getElementById('pdf-file-input')?.click()}
+                className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-400 transition-colors"
+              >
+                <input
+                  id="pdf-file-input"
+                  type="file"
+                  multiple
+                  onChange={handleFileChange}
+                  accept="application/pdf"
+                  className="hidden"
+                />
+                <svg className="mx-auto h-10 w-10 mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                <p className="text-sm text-gray-500">Seret & lepas file PDF di sini, atau klik untuk memilih</p>
+                <p className="text-xs mt-1 text-gray-400">Maks. 10MB per file</p>
+              </div>
               {files.length > 0 && (
                 <div className="mt-4 space-y-2">
                   {files.map((item, index) => (

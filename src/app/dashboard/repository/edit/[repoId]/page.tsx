@@ -138,7 +138,7 @@ export default function EditRepositoryPage() {
     }
   };
 
-  if (isLoading) return <div className="text-center py-12">Memuat...</div>;
+  if (isLoading) return <div className="flex items-center justify-center py-12"><Spinner size="lg" /></div>;
   if (error)
     return (
       <div className="text-center py-12 text-red-500">Gagal memuat data.</div>

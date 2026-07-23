@@ -431,7 +431,7 @@ export default function EditorPage() {
     return (
       <div className="text-center py-12 text-red-500">Gagal memuat data.</div>
     );
-  if (isLoading) return <div className="text-center py-12">Memuat...</div>;
+  if (isLoading) return <div className="flex items-center justify-center py-12"><LoadingSpinner /></div>;
 
   return (
     <main className="px-4 sm:px-6 lg:px-8 py-6">

@@ -293,7 +293,7 @@ function FooterPageContent() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex items-center justify-center gap-2 px-6 py-2 w-44 rounded-lg bg-sky-600 text-white font-semibold hover:bg-sky-700 disabled:bg-gray-400 transition-all"
+                className="flex items-center justify-center gap-2 px-6 py-2 w-full sm:w-auto rounded-lg bg-sky-600 text-white font-semibold hover:bg-sky-700 disabled:bg-gray-400 transition-all"
               >
                 {isSubmitting ? (
                   <Spinner size="sm" />

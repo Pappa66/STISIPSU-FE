@@ -289,8 +289,8 @@ const UploadModal = ({
                 )}
               </>
             ) : (
-              <div className="text-center py-4 text-sm text-gray-600">
-                Memuat data otomatis...
+              <div className="flex justify-center py-4">
+                <LoadingSpinner />
               </div>
             )}
           </div>
@@ -512,8 +512,8 @@ export default function MyRepositoryPage() {
 
   if (error)
     return (
-      <div className="container py-12 text-center text-red-500">
-        Error: Gagal memuat data.
+      <div className="p-8 text-center text-red-500">
+        Gagal memuat data.
       </div>
     );
   if (isLoading) {

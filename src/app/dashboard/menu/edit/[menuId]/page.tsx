@@ -95,7 +95,7 @@ export default function EditMenuPage() {
       </div>
     );
   if (isLoading || !menuItem)
-    return <div className="text-center py-12">Memuat data menu...</div>;
+    return <div className="flex items-center justify-center py-12"><Spinner size="lg" /></div>;
 
   return (
     <main className="px-4 sm:px-6 lg:px-8 py-6">

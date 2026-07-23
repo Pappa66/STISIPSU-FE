@@ -6,6 +6,7 @@ import Link from "next/link";
 import useSWR from "swr";
 import axios from "axios";
 import { UserPlus, ChevronRight, Mail, Users, ChevronLeft } from "lucide-react";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 // Tipe data untuk mahasiswa bimbingan
 interface AdvisedStudent {
@@ -47,13 +48,13 @@ export default function AdvisingPage() {
 
   if (isLoading)
     return (
-      <div className="container py-12 text-center">
-        Memuat data mahasiswa...
+      <div className="flex items-center justify-center py-20">
+        <LoadingSpinner />
       </div>
     );
   if (error)
     return (
-      <div className="container py-12 text-center text-red-500">
+      <div className="p-8 text-center text-red-500">
         Gagal memuat data.
       </div>
     );

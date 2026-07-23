@@ -349,8 +349,8 @@ export default function StudentSubmissionsPage() {
 
   if (isLoading) {
     return (
-      <div className="text-center py-12 text-gray-500">
-        ⏳ Memuat kiriman mahasiswa...
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="animate-spin h-8 w-8 text-sky-600" />
       </div>
     );
   }
@@ -358,7 +358,7 @@ export default function StudentSubmissionsPage() {
   if (error) {
     return (
       <div className="text-center py-12 text-red-600">
-        ❌ Gagal memuat data.
+        Gagal memuat data.
       </div>
     );
   }

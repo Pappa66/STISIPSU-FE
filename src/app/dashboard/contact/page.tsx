@@ -120,7 +120,7 @@ function ContactPageContent() {
           {/* Form */}
           <form
             onSubmit={handleSubmit}
-            className="p-8 bg-white rounded-lg shadow-md max-w-4xl mx-auto space-y-8 border"
+            className="p-4 sm:p-8 bg-white rounded-lg shadow-md max-w-4xl mx-auto space-y-6 sm:space-y-8 border"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Alamat & Email */}
@@ -210,7 +210,7 @@ function ContactPageContent() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex items-center justify-center gap-2 px-6 py-2 w-44 rounded-lg bg-sky-600 text-white font-semibold hover:bg-sky-700 disabled:bg-gray-400 transition-all"
+                className="flex items-center justify-center gap-2 px-6 py-2 w-full sm:w-auto rounded-lg bg-sky-600 text-white font-semibold hover:bg-sky-700 disabled:bg-gray-400 transition-all"
               >
                 {isSubmitting ? (
                   <Spinner size="sm" />

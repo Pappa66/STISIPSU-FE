@@ -24,6 +24,7 @@ import { Plus, Trash2, Edit, GripVertical } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { fetchWithAuth } from "@/utils/api";
 import { NavItem, SubMenuItem } from "@/types";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 import CreateMenuModal from "@/components/dashboard/CreateMenuModal";
 import ConfirmDeleteModal from "@/components/dashboard/ConfirmDeleteModal";
 import toast from "react-hot-toast";
@@ -266,7 +267,7 @@ export default function MenuManagementPage() {
     return (
       <div className="text-center text-red-500 py-8">Gagal memuat data.</div>
     );
-  if (isLoading) return <div className="text-center py-8">Memuat data...</div>;
+  if (isLoading) return <div className="flex items-center justify-center py-12"><LoadingSpinner /></div>;
 
   return (
     <main className="px-4 sm:px-6 lg:px-8 py-6">

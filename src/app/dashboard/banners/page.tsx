@@ -56,11 +56,11 @@ function SortableBannerCard({
   const isError = task?.status === "error";
 
   return (
-    <div ref={setNodeRef} style={style} className={`flex items-center gap-3 bg-white border rounded-lg p-3 shadow-sm ${isUploading ? (isError ? "border-red-300 bg-red-50" : "border-blue-300 bg-blue-50") : ""}`}>
-      <button {...listeners} className="cursor-grab p-1 text-gray-400 hover:bg-gray-100 rounded">
+    <div ref={setNodeRef} style={style} className={`flex items-center gap-2 sm:gap-3 bg-white border rounded-lg p-3 shadow-sm ${isUploading ? (isError ? "border-red-300 bg-red-50" : "border-blue-300 bg-blue-50") : ""}`}>
+      <button {...listeners} className="cursor-grab p-1 text-gray-400 hover:bg-gray-100 rounded shrink-0">
         <GripVertical size={18} />
       </button>
-      <div className="relative w-32 h-20 rounded overflow-hidden flex-shrink-0 bg-gray-100">
+      <div className="relative w-20 h-14 sm:w-32 sm:h-20 rounded overflow-hidden flex-shrink-0 bg-gray-100">
         {isUploading && !isError ? (
           <div className="w-full h-full flex items-center justify-center bg-gray-200">
             <Loader2 className="animate-spin text-blue-500" size={20} />
@@ -251,11 +251,11 @@ export default function BannersPage() {
     <main className="px-4 sm:px-6 lg:px-8 py-6">
       <div className="max-w-screen-xl mx-auto">
         <div className="bg-white shadow-md rounded-xl p-6">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             <h1 className="text-2xl font-bold">Kelola Banner</h1>
             <button
               onClick={() => { resetForm(); setShowForm(true); }}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               <Plus size={18} /> Tambah Banner
             </button>
@@ -301,7 +301,7 @@ export default function BannersPage() {
                         if (f) { setFile(f); setPreview(URL.createObjectURL(f)); }
                       }} />
                     {preview ? (
-                      <img src={preview} alt="preview" className="mx-auto h-24 w-auto rounded object-cover" />
+                      <img src={preview} alt="preview" className="mx-auto h-24 w-auto max-w-full rounded object-cover" />
                     ) : (
                       <div className="text-gray-500">
                         <svg className="mx-auto h-10 w-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>

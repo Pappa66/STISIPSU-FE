@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { fetchWithAuth } from "@/utils/api";
 import Pagination from "@/components/ui/Pagination";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 import {
   Edit,
   Trash2,
@@ -124,7 +125,7 @@ export default function RepositoryManagementPage() {
     );
 
   if (isLoading && !data)
-    return <div className="text-center py-12">Memuat data...</div>;
+    return <div className="flex items-center justify-center py-12"><LoadingSpinner /></div>;
 
   return (
     <main className="px-4 sm:px-6 lg:px-8 py-6">

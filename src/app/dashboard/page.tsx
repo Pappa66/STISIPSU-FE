@@ -89,7 +89,7 @@ export default function DashboardPage() {
     } catch { logout(); router.replace("/login"); }
   }, [token, router, logout]);
 
-  if (!userRole) return <div className="text-center py-20">Memuat dasbor...</div>;
+  if (!userRole) return <div className="flex items-center justify-center py-20"><LoadingSpinner /></div>;
 
   const maxCount = stats?.submissionsByMonth?.length
     ? Math.max(...stats.submissionsByMonth.map((s) => s.count), 1) : 1;
@@ -232,7 +232,7 @@ export default function DashboardPage() {
             </h3>
             <div className="bg-gray-50 rounded-xl border divide-y">
               {!activityLogs ? (
-                <p className="p-4 text-sm text-gray-400">Memuat...</p>
+                <div className="flex justify-center p-4"><LoadingSpinner /></div>
               ) : activityLogs.logs?.length === 0 ? (
                 <p className="p-4 text-sm text-gray-400">Belum ada aktivitas.</p>
               ) : (

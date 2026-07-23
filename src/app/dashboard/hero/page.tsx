@@ -117,20 +117,20 @@ export default function HeroPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Gambar</label>
-              <div className="flex items-start gap-4">
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-start gap-4">
+                <div className="w-full space-y-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <input type="text" value={form.imageUrl} onChange={(e) => setForm({...form, imageUrl: e.target.value})}
-                      placeholder="/images/logo-kampus.png atau uploads/..." className="flex-1 p-3 border rounded-md text-sm" />
+                      placeholder="/images/logo-kampus.png atau uploads/..." className="flex-1 min-w-0 p-3 border rounded-md text-sm" />
                     <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading}
-                      className="flex items-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-md text-sm transition">
+                      className="flex items-center gap-2 px-4 py-3 whitespace-nowrap bg-gray-100 hover:bg-gray-200 rounded-md text-sm transition">
                       {uploading ? "..." : <><Upload size={16} /> Upload</>}
                     </button>
                   </div>
                   <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
                 </div>
                 {form.imageUrl && (
-                  <div className="relative w-24 h-24 rounded-lg overflow-hidden border flex-shrink-0 bg-gray-50">
+                  <div className="relative w-16 h-16 sm:w-24 sm:h-24 rounded-lg overflow-hidden border flex-shrink-0 bg-gray-50">
                     <img src={form.imageUrl.startsWith("http") ? form.imageUrl : `${baseApi}/${form.imageUrl.replace(/^\//, "")}`}
                       alt="preview" className="w-full h-full object-contain" />
                   </div>

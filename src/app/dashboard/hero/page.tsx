@@ -25,7 +25,8 @@ const fetcher = async (url: string): Promise<HeroData> => {
 };
 
 export default function HeroPage() {
-  const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}api/hero`;
+  const baseApi = process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, "") || "";
+  const apiUrl = `${baseApi}/api/hero`;
   const { data, error, isLoading, mutate } = useSWR<HeroData>(apiUrl, fetcher);
 
   const [form, setForm] = useState<HeroData>({
@@ -46,7 +47,7 @@ export default function HeroPage() {
     try {
       const fd = new FormData();
       fd.append("upload", file);
-      const res = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}api/upload`, {
+      const res = await fetchWithAuth(`${baseApi}/api/upload`, {
         method: "POST",
         body: fd,
       });
@@ -130,7 +131,7 @@ export default function HeroPage() {
                 </div>
                 {form.imageUrl && (
                   <div className="relative w-24 h-24 rounded-lg overflow-hidden border flex-shrink-0 bg-gray-50">
-                    <img src={form.imageUrl.startsWith("http") ? form.imageUrl : `${process.env.NEXT_PUBLIC_API_URL}${form.imageUrl}`}
+                    <img src={form.imageUrl.startsWith("http") ? form.imageUrl : `${baseApi}/${form.imageUrl.replace(/^\//, "")}`}
                       alt="preview" className="w-full h-full object-contain" />
                   </div>
                 )}

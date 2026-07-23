@@ -103,7 +103,8 @@ const sections = [
           "Cari: filter berdasarkan judul",
         ],
         details: [
-          "Featured Image standar: 1200×630 px (landscape) atau 600×800 px (portrait). Ukuran tak sesuai tetap bisa upload tapi akan tampil kurang rapi. Rencana: validasi ukuran otomatis dengan notifikasi ke admin jika dimensi tidak sesuai standar.",
+          "Thumbnail/Featured Image hanya untuk tampilan card di list berita — tidak muncul di halaman detail artikel.",
+          "Gambar di dalam konten berita (blok image) ditampilkan seragam ukuran 16:9 (aspect-video) agar rapi, baik landscape maupun portrait. Disarankan maksimal 3 gambar per artikel. Untuk galeri foto, gunakan menu Galeri.",
           "Judul maksimal 2 baris (line-clamp-2) di card listing. Kelebihan teks akan dipotong dengan ellipsis (...)",
         ],
       },
@@ -341,15 +342,23 @@ const sections = [
         desc: "Ukuran ideal: 1920 × 600 px. Rasio 3:1. Format JPG atau WebP. Maksimal 500 KB. Pastikan teks penting berada di area aman (center). Gunakan gambar dengan kontras tinggi agar teks overlay mudah dibaca.",
       },
       {
-        title: "Featured Image Berita",
+        title: "Featured Image Berita (thumbnail)",
         icon: Newspaper,
-        desc: "Ukuran WAJIB disamakan sebelum upload:",
+        desc: "Featured Image (thumbnail) hanya tampil di card listing berita — tidak muncul di halaman detail. Ukuran standar:",
         details: [
           "Standar landscape: 1200 × 630 px (rasio ~1.9:1). Format JPG/WebP. Maks 300 KB.",
           "Alternatif portrait: 600 × 800 px (rasio 3:4). Format JPG/PNG/WebP. Maks 400 KB.",
-          "Di halaman detail, gambar ditampilkan tanpa crop paksa — landscape lebar penuh, portrait dibatasi tinggi 70% layar, menggunakan object-contain.",
-          "Jika ukuran tidak sesuai standar, gambar tetap bisa diupload (untuk konten yang sudah ada) namun akan muncul notifikasi peringatan di dashboard admin.",
-          "Rencana: ke depannya upload akan ditolak otomatis jika dimensi tidak sesuai standar.",
+        ],
+      },
+      {
+        title: "Gambar Konten Berita (blok image)",
+        icon: FileImage,
+        desc: "Gambar di dalam body berita ditambahkan via blok Image di editor. Semua gambar ditampilkan seragam ukuran 16:9 (aspect-video) — portrait atau landscape sama-sama di-crop ke rasio 16:9. Disarankan:",
+        details: [
+          "Gunakan maksimal 3 gambar per artikel. Berita bukan galeri.",
+          "Untuk koleksi foto, gunakan menu Galeri, bukan blok Image di berita.",
+          "Aspect ratio 16:9, resolusi minimal 800×450 px.",
+          "Format JPG/WebP, maks 300 KB per gambar.",
         ],
       },
       {

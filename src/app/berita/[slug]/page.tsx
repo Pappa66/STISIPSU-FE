@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Calendar, User, Tag, ArrowLeft, Share2, Link as LinkIcon, Check } from "lucide-react";
-import { Img } from '@/components/common/OptimizedImage';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 interface Post {
@@ -103,16 +102,6 @@ export default function DetailBeritaPage() {
             </div>
           </div>
 
-          {data.featuredImageUrl && (
-            <div className="w-full max-w-[600px] mx-auto mb-6 bg-gray-100 rounded-md overflow-hidden flex items-center justify-center" style={{ minHeight: 200 }}>
-              <Img
-                src={data.featuredImageUrl}
-                alt={data.title}
-                className="w-full h-auto max-h-[70vh] object-contain"
-              />
-            </div>
-          )}
-
           <div
             className="prose prose-sky max-w-none text-gray-800 leading-relaxed mx-auto"
             dangerouslySetInnerHTML={{
@@ -204,7 +193,9 @@ function renderBlocksToHTML(blocks: any[], baseUrl: string): string {
             ? block.url
             : `${baseUrl}${block.url}`;
           return `<div class="flex justify-center my-4">
-                    <img src="${imgSrc}" alt="" loading="lazy" decoding="async" class="rounded-md shadow-sm w-full max-w-[700px] h-auto object-contain" />
+                    <div class="w-full max-w-[700px] aspect-video overflow-hidden rounded-md shadow-sm bg-gray-100">
+                      <img src="${imgSrc}" alt="" loading="lazy" decoding="async" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                    </div>
                   </div>`;
 
         case "video":

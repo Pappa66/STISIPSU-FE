@@ -496,7 +496,8 @@ export default function EditorPage() {
                 </DndContext>
               </div>
 
-              <div className="mt-6 border-t pt-4 flex items-center gap-2">
+              <div className="mt-6 border-t pt-4">
+                <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm font-medium">Tambah Blok:</span>
                 <button
                   onClick={() => addBlock("heading")}
@@ -540,6 +541,11 @@ export default function EditorPage() {
                 >
                   <Code2 size={18} />
                 </button>
+                </div>
+                <p className="text-xs text-gray-400 mt-2 leading-relaxed">
+                  Gunakan gambar secukupnya (maks 3). Di halaman detail, semua gambar ditampilkan seragam ukuran 16:9.
+                  Untuk galeri foto, gunakan menu <Link href="/dashboard/gallery" className="text-sky-600 underline">Galeri</Link>.
+                </p>
               </div>
             </div>
 

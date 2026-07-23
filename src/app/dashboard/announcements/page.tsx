@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, FormEvent, useRef } from "react";
+import React, { useState, FormEvent, useRef, useCallback } from "react";
 import useSWR from "swr";
 import { fetchWithAuth } from "@/utils/api";
 import {
@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import LoadingButton from "@/components/common/LoadingButton";
 import { createPortal } from "react-dom";
 
 // Type
@@ -40,10 +41,12 @@ const ConfirmDeleteModal = ({
   title,
   onConfirm,
   onCancel,
+  loading,
 }: {
   title: string;
   onConfirm: () => void;
   onCancel: () => void;
+  loading?: boolean;
 }) =>
   createPortal(
     <div className="fixed inset-0 z-[9999] bg-black/40 flex items-center justify-center p-4">
@@ -57,16 +60,14 @@ const ConfirmDeleteModal = ({
         <div className="flex justify-end gap-3">
           <button
             onClick={onCancel}
-            className="px-4 py-2 rounded text-sm border"
+            disabled={loading}
+            className="px-4 py-2 rounded text-sm border hover:bg-gray-50 transition disabled:opacity-50"
           >
             Batal
           </button>
-          <button
-            onClick={onConfirm}
-            className="px-4 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700"
-          >
+          <LoadingButton onClick={onConfirm} variant="danger" size="sm" loading={loading}>
             Hapus
-          </button>
+          </LoadingButton>
         </div>
       </div>
     </div>,
@@ -95,6 +96,8 @@ const AnnouncementModal = ({
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadProgress, setUploadProgress] = useState(-1);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<any>) => {
     const { name, value, checked, type } = e.target;
@@ -104,36 +107,39 @@ const AnnouncementModal = ({
     }));
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const data = new FormData();
-    data.append("upload", file);
+    const form = new FormData();
+    form.append("upload", file);
 
-    const promise = fetchWithAuth(
-      `${process.env.NEXT_PUBLIC_API_URL}api/upload`,
-      {
-        method: "POST",
-        body: data,
+    setUploadProgress(0);
+
+    const xhr = new XMLHttpRequest();
+    xhr.upload.onprogress = (ev) => {
+      if (ev.lengthComputable) setUploadProgress(Math.round((ev.loaded / ev.total) * 100));
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        const res = JSON.parse(xhr.responseText);
+        setFormData((prev) => ({ ...prev, imageUrl: res.url }));
+        setUploadProgress(-1);
+        toast.success("Gambar berhasil diunggah");
+      } else {
+        setUploadProgress(-1);
+        toast.error("Gagal upload gambar");
       }
-    ).then((res) => {
-      if (!res.ok) throw new Error("Gagal unggah file.");
-      return res.json();
-    });
-
-    toast.promise(promise, {
-      loading: "Mengunggah...",
-      success: (res) => {
-        setFormData((prev) => ({
-          ...prev,
-          imageUrl: res.url,
-        }));
-        return "Berhasil diunggah";
-      },
-      error: "Gagal upload",
-    });
-  };
+    };
+    xhr.onerror = () => {
+      setUploadProgress(-1);
+      toast.error("Network error");
+    };
+    xhr.open("POST", `${process.env.NEXT_PUBLIC_API_URL}api/upload`);
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (token) xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+    xhr.send(form);
+  }, []);
 
   const handleRemoveImage = () => {
     setFormData((prev) => ({ ...prev, imageUrl: "" }));
@@ -153,20 +159,18 @@ const AnnouncementModal = ({
       targetAudiences: ["PUBLIC"],
     };
 
-    const promise = fetchWithAuth(url, {
-      method,
-      body: JSON.stringify(dataToSubmit),
-    });
-
-    toast.promise(promise, {
-      loading: "Menyimpan...",
-      success: () => {
-        mutate();
-        onClose();
-        return "Berhasil disimpan";
-      },
-      error: "Gagal menyimpan",
-    });
+    setSubmitting(true);
+    try {
+      const res = await fetchWithAuth(url, { method, body: JSON.stringify(dataToSubmit) });
+      if (!res.ok) throw new Error("Gagal");
+      mutate();
+      onClose();
+      toast.success("Berhasil disimpan");
+    } catch {
+      toast.error("Gagal menyimpan");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return createPortal(
@@ -222,6 +226,14 @@ const AnnouncementModal = ({
                 <Trash2 size={16} />
               </button>
             </div>
+          ) : uploadProgress >= 0 ? (
+            <div className="p-6 border-2 border-dashed rounded-lg h-60 flex flex-col items-center justify-center">
+              <svg className="animate-spin w-10 h-10 text-blue-500 mb-3" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
+              <span className="text-sm text-gray-500 mb-2">Mengunggah {uploadProgress}%</span>
+              <div className="w-full max-w-xs bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div className="h-full bg-blue-500 transition-all duration-300 rounded-full" style={{ width: `${uploadProgress}%` }} />
+              </div>
+            </div>
           ) : (
             <label className="cursor-pointer p-6 border-2 border-dashed rounded-lg h-60 flex flex-col items-center justify-center">
               <ImageUp size={48} className="text-gray-400 mb-2" />
@@ -263,16 +275,13 @@ const AnnouncementModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="bg-gray-200 px-4 py-2 rounded font-semibold"
+              className="bg-gray-200 px-4 py-2 rounded font-semibold hover:bg-gray-300 transition active:scale-[0.97]"
             >
               Batal
             </button>
-            <button
-              type="submit"
-              className="bg-sky-600 text-white px-4 py-2 rounded font-semibold hover:bg-sky-700"
-            >
+            <LoadingButton type="submit" loading={submitting}>
               Simpan
-            </button>
+            </LoadingButton>
           </div>
         </form>
       </div>
@@ -293,6 +302,7 @@ export default function AnnouncementManagementPage() {
   const [selectedAnnouncement, setSelectedAnnouncement] =
     useState<Partial<Announcement> | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<Announcement | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const openModal = (item: Partial<Announcement> | null = null) => {
     setSelectedAnnouncement(item);
@@ -301,18 +311,18 @@ export default function AnnouncementManagementPage() {
 
   const executeDelete = async () => {
     if (!confirmDelete) return;
-    const promise = fetchWithAuth(`${apiUrl}/${confirmDelete.id}`, {
-      method: "DELETE",
-    });
-    toast.promise(promise, {
-      loading: "Menghapus...",
-      success: () => {
-        mutate();
-        setConfirmDelete(null);
-        return "Berhasil dihapus";
-      },
-      error: "Gagal menghapus",
-    });
+    setDeleting(true);
+    try {
+      const res = await fetchWithAuth(`${apiUrl}/${confirmDelete.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Gagal");
+      mutate();
+      setConfirmDelete(null);
+      toast.success("Berhasil dihapus");
+    } catch {
+      toast.error("Gagal menghapus");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
@@ -330,6 +340,7 @@ export default function AnnouncementManagementPage() {
           title={confirmDelete.title}
           onConfirm={executeDelete}
           onCancel={() => setConfirmDelete(null)}
+          loading={deleting}
         />
       )}
 

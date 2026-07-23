@@ -8,6 +8,7 @@ import { useBackgroundUpload, UploadTask } from "@/hooks/useBackgroundUpload";
 import { UploadProgressBadge, UploadProgressBar } from "@/components/common/UploadProgress";
 import { toast } from "react-hot-toast";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import LoadingButton from "@/components/common/LoadingButton";
 import { Plus, Trash2, GripVertical, Eye, EyeOff, MoveUp, MoveDown, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import {
   DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent,
@@ -115,6 +116,7 @@ export default function BannersPage() {
   const [linkUrl, setLinkUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
@@ -138,7 +140,7 @@ export default function BannersPage() {
     setShowForm(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) { toast.error("Judul wajib diisi."); return; }
     if (!file && !editingBanner) { toast.error("Gambar wajib dipilih."); return; }
@@ -150,13 +152,17 @@ export default function BannersPage() {
     if (file) formData.append("image", file);
 
     if (editingBanner) {
-      fetchWithAuth(
-        `${process.env.NEXT_PUBLIC_API_URL}api/banners/${editingBanner.id}`,
-        { method: "PUT", body: formData }
-      ).then(() => {
+      setSubmitting(true);
+      try {
+        const res = await fetchWithAuth(
+          `${process.env.NEXT_PUBLIC_API_URL}api/banners/${editingBanner.id}`,
+          { method: "PUT", body: formData }
+        );
+        if (!res.ok) throw new Error("Gagal");
         toast.success("Banner diperbarui!");
         refreshBanners();
-      }).catch(() => toast.error("Gagal memperbarui banner."));
+      } catch { toast.error("Gagal memperbarui banner."); }
+      finally { setSubmitting(false); }
       resetForm();
       return;
     }
@@ -307,12 +313,9 @@ export default function BannersPage() {
                 </div>
               </div>
               <div className="flex gap-2 mt-4">
-                <button type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                  Simpan
-                </button>
+                <LoadingButton type="submit" loading={submitting}>Simpan</LoadingButton>
                 <button type="button" onClick={resetForm}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-100">
+                  className="px-4 py-2 border rounded-lg hover:bg-gray-100 transition active:scale-[0.97]">
                   Batal
                 </button>
               </div>

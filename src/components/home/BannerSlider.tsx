@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import useSWR from "swr";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -25,9 +25,10 @@ export default function BannerSlider() {
   );
 
   const [current, setCurrent] = useState(0);
+  const isPaused = useRef(false);
 
   const next = useCallback(() => {
-    if (banners && banners.length > 1) setCurrent((c) => (c + 1) % banners.length);
+    if (!isPaused.current && banners && banners.length > 1) setCurrent((c) => (c + 1) % banners.length);
   }, [banners]);
 
   const prev = useCallback(() => {
@@ -65,7 +66,11 @@ export default function BannerSlider() {
   );
 
   return (
-    <section className="relative w-full min-h-[250px] sm:min-h-[300px] md:min-h-[400px] lg:min-h-[480px] overflow-hidden bg-gray-900 my-2 sm:my-4">
+    <section
+      className="relative w-full min-h-[250px] sm:min-h-[300px] md:min-h-[400px] lg:min-h-[480px] overflow-hidden bg-gray-900 mt-4 mb-16 sm:mt-6 sm:mb-24"
+      onMouseEnter={() => { isPaused.current = true; }}
+      onMouseLeave={() => { isPaused.current = false; }}
+    >
       {banners.map((b, i) => (
         <div
           key={b.id}
@@ -75,7 +80,7 @@ export default function BannerSlider() {
             src={b.imageUrl}
             alt=""
             fill
-            className="object-cover"
+            className="object-contain"
             priority={i === current}
             sizes="100vw"
           />

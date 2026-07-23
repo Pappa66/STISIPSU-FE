@@ -39,8 +39,8 @@ export default function PopupAnnouncement() {
   if (!show || !announcement) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center backdrop-blur-sm bg-black/40 p-4 animate-fadeIn">
-      <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full relative animate-scaleIn">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center backdrop-blur-sm bg-black/20 p-4 animate-fadeIn">
+      <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 max-w-2xl w-full relative animate-scaleIn">
         <button
   onClick={() => setShow(false)}
   className="
@@ -65,14 +65,13 @@ export default function PopupAnnouncement() {
         ) : (
           <div className="flex flex-col items-center gap-4">
             <h2 className="text-xl font-bold text-gray-900 text-center">Pengumuman</h2>
-            <div className="relative w-full max-h-[320px] aspect-video">
+            <div className="relative w-full aspect-video rounded-lg overflow-hidden">
               <OptimizedImage
                 src={announcement.imageUrl}
                 alt="Pengumuman"
                 fill
-                objectFit="contain"
-                className="rounded-lg"
               />
+              <div className="absolute inset-0 bg-black/15" />
             </div>
           </div>
         )}

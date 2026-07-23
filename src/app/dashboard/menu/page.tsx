@@ -95,43 +95,43 @@ function SortableItem({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className={`flex items-center justify-between w-full p-2 ${
+      className={`flex items-center justify-between w-full p-1.5 ${
         isSubmenu ? "bg-slate-100" : "bg-white border"
-      } rounded-lg`}
+      } rounded-md`}
     >
-      <div className="flex items-center flex-grow gap-2">
+      <div className="flex items-center flex-grow gap-1.5 min-w-0">
         <button
           {...listeners}
-          className="cursor-grab p-2 text-slate-500 hover:bg-slate-200 rounded-full shrink-0"
+          className="cursor-grab p-1 text-slate-400 hover:bg-slate-200 rounded shrink-0"
         >
-          <GripVertical size={16} />
+          <GripVertical size={14} />
         </button>
-        <span className={`leading-tight ${isSubmenu ? "text-sm" : "text-base font-semibold"}`}>
+        <span className={`truncate ${isSubmenu ? "text-xs" : "text-sm font-semibold"}`}>
           {isSubmenu ? `— ${item.name}` : item.name}
         </span>
         <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0 ${typeBadge.class}`}>
           {typeBadge.label}
         </span>
         {hasSubmenus && (
-          <span className="text-[10px] text-gray-400 shrink-0">
-            {subCount} sub menu
+          <span className="text-[10px] text-gray-400 whitespace-nowrap shrink-0">
+            {subCount}
           </span>
         )}
       </div>
-      <div className="flex items-center gap-1 ml-2 shrink-0">
+      <div className="flex items-center gap-0.5 shrink-0">
         <Link
           href={`/dashboard/menu/edit/${item.id}`}
-          className={`p-2 rounded-full ${hasSubmenus ? "text-gray-400 hover:bg-gray-100" : "text-blue-600 hover:bg-blue-100"}`}
+          className={`p-1.5 rounded-md ${hasSubmenus ? "text-gray-400 hover:bg-gray-100" : "text-blue-600 hover:bg-blue-100"}`}
           title={hasSubmenus ? "Edit nama & ikon (menu induk)" : "Edit"}
         >
-          <Edit size={16} />
+          <Edit size={14} />
         </Link>
         <button
           onClick={() => onDelete(item.id, isSubmenu)}
-          className="p-2 text-red-500 hover:bg-red-100 rounded-full"
+          className="p-1.5 text-red-500 hover:bg-red-100 rounded-md"
           title="Hapus"
         >
-          <Trash2 size={16} />
+          <Trash2 size={14} />
         </button>
       </div>
     </div>
@@ -311,7 +311,7 @@ export default function MenuManagementPage() {
             onDragCancel={() => setActiveId(null)}
             collisionDetection={closestCenter}
           >
-            <div className="space-y-6">
+            <div className="space-y-3">
               <SortableContext
                 items={menuItems.map((item) => item.id)}
                 strategy={verticalListSortingStrategy}
@@ -319,7 +319,7 @@ export default function MenuManagementPage() {
                 {menuItems.map((item) => (
                   <div
                     key={item.id}
-                    className="p-4 border rounded-xl bg-slate-50"
+                    className="p-3 border rounded-lg bg-slate-50"
                   >
                     <SortableItem
                       id={item.id}
@@ -327,7 +327,7 @@ export default function MenuManagementPage() {
                       isSubmenu={false}
                       onDelete={triggerDelete}
                     />
-                    <div className="pl-12 mt-3 space-y-2">
+                    <div className="pl-8 mt-2 space-y-1.5">
                       <SortableContext
                         items={item.submenus.map((sub) => sub.id)}
                         strategy={verticalListSortingStrategy}
@@ -345,14 +345,13 @@ export default function MenuManagementPage() {
                       {item.type !== "STATIC_PATH" && item.type !== "EXTERNAL" ? (
                       <button
                         onClick={() => handleCreateMenu(true, item.id)}
-                        className="flex items-center gap-2 bg-sky-700 text-white px-3 py-1 rounded font-semibold hover:bg-sky-800"
+                        className="flex items-center gap-1.5 bg-sky-700 text-white px-2.5 py-1 rounded text-xs font-semibold hover:bg-sky-800"
                       >
-                        <Plus size={14} /> Tambah Sub Menu
+                        <Plus size={12} /> Tambah Sub Menu
                       </button>
                       ) : (
-                      <p className="text-[11px] text-gray-400 italic px-1">Menu {item.type === "STATIC_PATH" ? "path statis" : "eksternal"} tidak bisa punya sub menu</p>
+                      <p className="text-[11px] text-gray-400 italic">Menu {item.type === "STATIC_PATH" ? "path statis" : "eksternal"} tidak bisa punya sub menu</p>
                       )}
-                      </button>
                     </div>
                   </div>
                 ))}

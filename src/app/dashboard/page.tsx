@@ -197,18 +197,18 @@ export default function DashboardPage() {
           {userRole === "ADMIN" && !stats && <LoadingSpinner />}
 
           {/* MAHASISWA — mini stats */}
-          {userRole === "MAHASISWA" && (
+          {userRole === "MAHASISWA" && myRepo && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <MiniStat icon={Upload} label="Repository Saya" value={myRepo?.length || 0} color="text-sky-600" />
-              <MiniStat icon={FileText} label="Disetujui" value={myRepo?.filter((r: any) => r.approvalStatus === "APPROVED")?.length || 0} color="text-green-600" />
+              <MiniStat icon={Upload} label="Repository Saya" value={myRepo.length || 0} color="text-sky-600" />
+              <MiniStat icon={FileText} label="Disetujui" value={myRepo.filter((r: any) => r.approvalStatus === "APPROVED").length || 0} color="text-green-600" />
             </div>
           )}
 
           {/* DOSEN — mini stats */}
-          {userRole === "DOSEN" && (
+          {userRole === "DOSEN" && myStudents?.students && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <MiniStat icon={GraduationCap} label="Mahasiswa Bimbingan" value={myStudents?.length || 0} color="text-indigo-600" />
-              <MiniStat icon={BookCopy} label="Perlu Review" value={myStudents?.filter((s: any) => s._count?.repositoryItems > 0)?.length || 0} color="text-amber-600" />
+              <MiniStat icon={GraduationCap} label="Mahasiswa Bimbingan" value={myStudents.students.length || 0} color="text-indigo-600" />
+              <MiniStat icon={BookCopy} label="Perlu Review" value={myStudents.students.filter((s: any) => s.pendingItemsCount > 0).length || 0} color="text-amber-600" />
             </div>
           )}
 

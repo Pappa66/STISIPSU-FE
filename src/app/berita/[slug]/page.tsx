@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Calendar, User, Tag, ArrowLeft, Share2, Link as LinkIcon, Check } from "lucide-react";
 import OptimizedImage from '@/components/common/OptimizedImage';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 interface Post {
   title: string;
@@ -44,7 +45,7 @@ export default function DetailBeritaPage() {
 
   if (loading)
     return (
-      <div className="text-center py-20 text-gray-600">Memuat berita...</div>
+      <div className="flex items-center justify-center py-20"><LoadingSpinner /></div>
     );
 
   if (!data) {
@@ -103,7 +104,7 @@ export default function DetailBeritaPage() {
           </div>
 
           {data.featuredImageUrl && (
-            <div className="relative w-full max-w-[600px] h-[300px] mx-auto mb-6">
+            <div className="relative w-full max-w-[600px] mx-auto mb-6 aspect-[2/1]">
               <OptimizedImage
                 src={data.featuredImageUrl}
                 alt={data.title}

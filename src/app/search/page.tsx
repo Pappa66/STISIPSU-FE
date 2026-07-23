@@ -75,7 +75,7 @@ function SearchPageComponent() {
      return <div className="text-center py-10">Silakan masukkan kata kunci untuk memulai pencarian.</div>;
   }
   
-  const noResults = !results || (results.posts.length === 0 && results.repositories.length === 0 && results.galleries.length === 0);
+  const noResults = !results || (!results.posts?.length && !results.repositories?.length && !results.galleries?.length);
 
   if (noResults) {
     return <div className="text-center py-10">Tidak ada hasil ditemukan untuk &quot;{query}&quot;.</div>;
@@ -89,7 +89,7 @@ function SearchPageComponent() {
 
       <div className="space-y-8">
         {/* HASIL BERITA & HALAMAN (Sudah Benar) */}
-        {results && results.posts.length > 0 && (
+        {results?.posts?.length > 0 && (
           <section>
             <h2 className="text-2xl font-semibold border-b pb-2 mb-4 flex items-center gap-3"><FileText /> Berita & Halaman</h2>
             <div className="space-y-4">
@@ -103,7 +103,7 @@ function SearchPageComponent() {
         )}
 
         {/* HASIL REPOSITORY (Sudah Benar) */}
-        {results && results.repositories.length > 0 && (
+        {results?.repositories?.length > 0 && (
           <section>
             <h2 className="text-2xl font-semibold border-b pb-2 mb-4 flex items-center gap-3"><Book /> Karya Ilmiah & Repository</h2>
             <div className="space-y-4">
@@ -118,7 +118,7 @@ function SearchPageComponent() {
         )}
 
         {/* HASIL GALERI (Sudah Diperbaiki) */}
-        {results && results.galleries.length > 0 && (
+        {results?.galleries?.length > 0 && (
           <section>
             <h2 className="text-2xl font-semibold border-b pb-2 mb-4 flex items-center gap-3"><ImageIcon /> Galeri</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">

@@ -171,14 +171,14 @@ export default function DashboardPage() {
 
               <h3 className="font-semibold text-gray-700 mb-3">Aktivitas Terbaru</h3>
               <div className="bg-gray-50 rounded-xl border divide-y">
-                {stats.recentItems.length === 0 ? (
+                {!stats.recentItems || stats.recentItems.length === 0 ? (
                   <p className="p-4 text-sm text-gray-400">Belum ada aktivitas.</p>
                 ) : (
                   stats.recentItems.map((item) => (
                     <div key={item.id} className="flex items-center justify-between p-3 text-sm">
                       <div className="flex-1 min-w-0">
                         <p className="truncate font-medium">{item.title}</p>
-                        <p className="text-xs text-gray-500">{item.uploader.name} &middot; {new Date(item.createdAt).toLocaleDateString("id-ID")}</p>
+                        <p className="text-xs text-gray-500">{item.uploader?.name || "Sistem"} &middot; {new Date(item.createdAt).toLocaleDateString("id-ID")}</p>
                       </div>
                       <span className={`px-2 py-1 rounded text-xs font-semibold ${
                         item.approvalStatus === "APPROVED" ? "bg-green-100 text-green-700" :

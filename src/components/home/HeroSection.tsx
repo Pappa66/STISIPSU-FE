@@ -42,7 +42,7 @@ export default function HeroSection() {
 
       {hero?.isActive !== false && (
       <section className="bg-[#0077c2] text-white py-5 px-4">
-        <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-2 items-center">
+        <div className={`container mx-auto grid grid-cols-1 gap-2 items-center ${hero?.imageUrl ? "md:grid-cols-2" : ""}`}>
           <div className="space-y-4">
             <h2 className="text-2xl md:text-3xl font-bold">
               {hero?.title || "Pendaftaran Mahasiswa Baru"}
@@ -60,16 +60,18 @@ export default function HeroSection() {
               </a>
             )}
           </div>
-          <div className="flex justify-center">
+          {hero?.imageUrl && (
+          <div className="hidden md:flex justify-center">
             <Image
-              src={hero?.imageUrl || "/images/logo-kampus.png"}
-              alt="Logo STISIP Syamsul Ulum"
+              src={hero.imageUrl}
+              alt=""
               width={200}
               height={200}
               className="object-contain"
               priority
             />
           </div>
+          )}
         </div>
       </section>
       )}

@@ -11,7 +11,7 @@ import LoadingSpinner from "@/components/common/LoadingSpinner";
 import LoadingButton from "@/components/common/LoadingButton";
 import { Plus, Trash2, GripVertical, Eye, EyeOff, MoveUp, MoveDown, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import {
-  DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent,
+  DndContext, closestCenter, PointerSensor, TouchSensor, useSensor, useSensors, DragEndEvent,
 } from "@dnd-kit/core";
 import {
   arrayMove, SortableContext, useSortable, verticalListSortingStrategy,
@@ -119,7 +119,10 @@ export default function BannersPage() {
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 300, tolerance: 5 } })
+  );
 
   const resetForm = () => {
     setTitle("");

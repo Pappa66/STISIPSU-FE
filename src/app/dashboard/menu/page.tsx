@@ -7,6 +7,7 @@ import {
   DndContext,
   closestCenter,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -97,6 +98,15 @@ function SortableItem({
         <span className={isSubmenu ? "text-sm" : "text-lg font-semibold"}>
           {isSubmenu ? `- ${item.name}` : item.name}
         </span>
+        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
+          (item as any).type === "EXTERNAL" ? "bg-purple-100 text-purple-700" :
+          (item as any).type === "STATIC_PATH" ? "bg-amber-100 text-amber-700" :
+          "bg-sky-100 text-sky-700"
+        }`}>
+          {(item as any).type === "EXTERNAL" ? "External" :
+           (item as any).type === "STATIC_PATH" ? "Halaman" :
+           "Internal"}
+        </span>
       </div>
       <div className="flex items-center gap-1 ml-4">
         <Link
@@ -152,7 +162,8 @@ export default function MenuManagementPage() {
   const activeItem = activeId ? itemsById.get(String(activeId)) : null;
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 300, tolerance: 5 } })
   );
 
   const handleCreateMenu = (submenu: boolean, pid?: string) => {

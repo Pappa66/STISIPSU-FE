@@ -10,11 +10,15 @@ import {
   X,
   AlertTriangle,
   ImageUp,
+  Eye,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import LoadingButton from "@/components/common/LoadingButton";
 import { createPortal } from "react-dom";
+
+const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, "") || "";
+const imgUrl = (path: string) => path?.startsWith("http") ? path : `${baseUrl}/${path.replace(/^\//, "")}`;
 
 // Type
 interface Announcement {
@@ -215,7 +219,7 @@ const AnnouncementModal = ({
           ) : formData.imageUrl ? (
             <div className="relative h-60 border-dashed border-2 rounded flex items-center justify-center">
               <img
-                src={`${process.env.NEXT_PUBLIC_API_URL}${formData.imageUrl}`}
+                src={imgUrl(formData.imageUrl)}
                 alt="preview"
                 className="max-w-full max-h-full object-contain"
               />
@@ -371,6 +375,7 @@ export default function AnnouncementManagementPage() {
                   <tr>
                     <th className="px-4 py-3">Judul</th>
                     <th className="px-4 py-3">Tipe</th>
+                    <th className="px-4 py-3">Gambar</th>
                     <th className="px-4 py-3">Status</th>
                     <th className="px-4 py-3">Kedaluwarsa</th>
                     <th className="px-4 py-3 text-center">Aksi</th>
@@ -379,13 +384,20 @@ export default function AnnouncementManagementPage() {
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={5} className="text-center py-8"><LoadingSpinner /></td>
+                      <td colSpan={6} className="text-center py-8"><LoadingSpinner /></td>
                     </tr>
                   ) : data.length > 0 ? (
                     data.map((item) => (
                       <tr key={item.id} className="border-t hover:bg-gray-50 transition">
                         <td className="px-4 py-3 font-semibold">{item.title}</td>
                         <td className="px-4 py-3">{item.type}</td>
+                        <td className="px-4 py-3">
+                          {item.type === "IMAGE" && item.imageUrl ? (
+                            <img src={imgUrl(item.imageUrl)} alt="" className="w-16 h-12 object-cover rounded border" />
+                          ) : (
+                            <span className="text-gray-400 text-xs">—</span>
+                          )}
+                        </td>
                         <td className="px-4 py-3">
                           <span className={`text-xs font-semibold px-2 py-1 rounded-full ${item.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
                             {item.isActive ? "Aktif" : "Tidak Aktif"}
@@ -408,7 +420,7 @@ export default function AnnouncementManagementPage() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={5} className="text-center py-12 text-gray-400">
+                      <td colSpan={6} className="text-center py-12 text-gray-400">
                         <AlertTriangle className="inline mb-2" size={36} />
                         <p>Belum ada pengumuman</p>
                       </td>
@@ -436,6 +448,9 @@ export default function AnnouncementManagementPage() {
                         </button>
                       </div>
                     </div>
+                    {item.type === "IMAGE" && item.imageUrl && (
+                      <img src={imgUrl(item.imageUrl)} alt="" className="w-full h-32 object-cover rounded border" />
+                    )}
                     <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full font-semibold ${item.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
                         {item.isActive ? "Aktif" : "Tidak Aktif"}

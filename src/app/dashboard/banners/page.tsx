@@ -1,11 +1,14 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import useSWR, { mutate } from "swr";
 import { fetchWithAuth } from "@/utils/api";
+import { useAuthStore } from "@/store/authStore";
+import { useBackgroundUpload, UploadTask } from "@/hooks/useBackgroundUpload";
+import { UploadProgressBadge, UploadProgressBar } from "@/components/common/UploadProgress";
 import { toast } from "react-hot-toast";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
-import { Plus, Trash2, GripVertical, Eye, EyeOff, MoveUp, MoveDown } from "lucide-react";
+import { Plus, Trash2, GripVertical, Eye, EyeOff, MoveUp, MoveDown, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import {
   DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent,
 } from "@dnd-kit/core";
@@ -13,7 +16,6 @@ import {
   arrayMove, SortableContext, useSortable, verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import Image from "next/image";
 
 interface Banner {
   id: string;
@@ -25,60 +27,86 @@ interface Banner {
   isActive: boolean;
 }
 
+interface OptimisticBanner extends Banner {
+  _optimistic?: boolean;
+  _taskId?: string;
+}
+
 const fetcher = (url: string) => fetchWithAuth(url).then((r) => r.json());
 const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, "") || "";
 const imgUrl = (path: string) => path?.startsWith("http") ? path : `${baseUrl}/${path.replace(/^\//, "")}`;
 
 function SortableBannerCard({
   banner,
+  task,
   onDelete,
   onToggleActive,
   onEdit,
 }: {
-  banner: Banner;
+  banner: OptimisticBanner;
+  task?: UploadTask;
   onDelete: (id: string) => void;
   onToggleActive: (id: string, active: boolean) => void;
   onEdit: (banner: Banner) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: banner.id });
   const style = { transform: CSS.Transform.toString(transform), transition };
+  const isUploading = task && task.status !== "done";
+  const isError = task?.status === "error";
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-3 bg-white border rounded-lg p-3 shadow-sm">
+    <div ref={setNodeRef} style={style} className={`flex items-center gap-3 bg-white border rounded-lg p-3 shadow-sm ${isUploading ? (isError ? "border-red-300 bg-red-50" : "border-blue-300 bg-blue-50") : ""}`}>
       <button {...listeners} className="cursor-grab p-1 text-gray-400 hover:bg-gray-100 rounded">
         <GripVertical size={18} />
       </button>
       <div className="relative w-32 h-20 rounded overflow-hidden flex-shrink-0 bg-gray-100">
-        <img src={imgUrl(banner.imageUrl)} alt={banner.title} className="w-full h-full object-cover" />
+        {isUploading && !isError ? (
+          <div className="w-full h-full flex items-center justify-center bg-gray-200">
+            <Loader2 className="animate-spin text-blue-500" size={20} />
+          </div>
+        ) : (
+          <img src={imgUrl(banner.imageUrl)} alt={banner.title} className="w-full h-full object-cover" />
+        )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-sm truncate">{banner.title}</p>
+        <div className="flex items-center gap-2">
+          <p className="font-semibold text-sm truncate">{banner.title}</p>
+          {task && <UploadProgressBadge task={task} />}
+        </div>
         {banner.subtitle && <p className="text-xs text-gray-500 truncate">{banner.subtitle}</p>}
+        {task && <UploadProgressBar task={task} />}
       </div>
       <div className="flex items-center gap-1">
-        <button onClick={() => onEdit(banner)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded text-xs font-medium">
-          Edit
-        </button>
-        <button
-          onClick={() => onToggleActive(banner.id, !banner.isActive)}
-          className={`p-1.5 rounded ${banner.isActive ? "text-green-600 hover:bg-green-50" : "text-gray-400 hover:bg-gray-100"}`}
-          title={banner.isActive ? "Aktif" : "Nonaktif"}
-        >
-          {banner.isActive ? <Eye size={16} /> : <EyeOff size={16} />}
-        </button>
-        <button onClick={() => onDelete(banner.id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded">
-          <Trash2 size={16} />
-        </button>
+        {!isUploading && (
+          <>
+            <button onClick={() => onEdit(banner)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded text-xs font-medium">
+              Edit
+            </button>
+            <button
+              onClick={() => onToggleActive(banner.id, !banner.isActive)}
+              className={`p-1.5 rounded ${banner.isActive ? "text-green-600 hover:bg-green-50" : "text-gray-400 hover:bg-gray-100"}`}
+              title={banner.isActive ? "Aktif" : "Nonaktif"}
+            >
+              {banner.isActive ? <Eye size={16} /> : <EyeOff size={16} />}
+            </button>
+            <button onClick={() => onDelete(banner.id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded">
+              <Trash2 size={16} />
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
 }
 
 export default function BannersPage() {
-  const { data: banners, isLoading, error } = useSWR<Banner[]>(
+  const { data: banners, isLoading, error, mutate: refreshBanners } = useSWR<Banner[]>(
     `${process.env.NEXT_PUBLIC_API_URL}api/banners/admin/all`,
     fetcher
   );
+  const { token } = useAuthStore();
+  const { uploads, startUpload } = useBackgroundUpload();
+  const [optimisticBanners, setOptimisticBanners] = useState<OptimisticBanner[]>([]);
 
   const [showForm, setShowForm] = useState(false);
   const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
@@ -87,7 +115,6 @@ export default function BannersPage() {
   const [linkUrl, setLinkUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
@@ -111,10 +138,10 @@ export default function BannersPage() {
     setShowForm(true);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) { toast.error("Judul wajib diisi."); return; }
-    setSubmitting(true);
+    if (!file && !editingBanner) { toast.error("Gambar wajib dipilih."); return; }
 
     const formData = new FormData();
     formData.append("title", title);
@@ -122,27 +149,48 @@ export default function BannersPage() {
     formData.append("linkUrl", linkUrl);
     if (file) formData.append("image", file);
 
-    try {
-      if (editingBanner) {
-        await fetchWithAuth(
-          `${process.env.NEXT_PUBLIC_API_URL}api/banners/${editingBanner.id}`,
-          { method: "PUT", body: formData }
-        );
+    if (editingBanner) {
+      fetchWithAuth(
+        `${process.env.NEXT_PUBLIC_API_URL}api/banners/${editingBanner.id}`,
+        { method: "PUT", body: formData }
+      ).then(() => {
         toast.success("Banner diperbarui!");
-      } else {
-        await fetchWithAuth(
-          `${process.env.NEXT_PUBLIC_API_URL}api/banners`,
-          { method: "POST", body: formData }
-        );
-        toast.success("Banner ditambahkan!");
-      }
-      mutate(`${process.env.NEXT_PUBLIC_API_URL}api/banners/admin/all`);
+        refreshBanners();
+      }).catch(() => toast.error("Gagal memperbarui banner."));
       resetForm();
-    } catch {
-      toast.error("Gagal menyimpan banner.");
-    } finally {
-      setSubmitting(false);
+      return;
     }
+
+    const tempId = `temp-${Date.now()}`;
+    const optimistic: OptimisticBanner = {
+      id: tempId,
+      title,
+      subtitle: subtitle || null,
+      imageUrl: preview || "",
+      linkUrl: linkUrl || null,
+      order: banners?.length || 0,
+      isActive: true,
+      _optimistic: true,
+      _taskId: tempId,
+    };
+
+    setOptimisticBanners((prev) => [optimistic, ...prev]);
+    resetForm();
+
+    startUpload(
+      tempId,
+      `${process.env.NEXT_PUBLIC_API_URL}api/banners`,
+      formData,
+      "POST",
+      token
+    )
+      .then(() => {
+        setOptimisticBanners((prev) => prev.filter((b) => b.id !== tempId));
+        refreshBanners();
+      })
+      .catch(() => {
+        toast.error("Gagal mengunggah banner.");
+      });
   };
 
   const handleDelete = async (id: string) => {
@@ -150,7 +198,7 @@ export default function BannersPage() {
     try {
       await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}api/banners/${id}`, { method: "DELETE" });
       toast.success("Banner dihapus!");
-      mutate(`${process.env.NEXT_PUBLIC_API_URL}api/banners/admin/all`);
+      refreshBanners();
     } catch {
       toast.error("Gagal menghapus.");
     }
@@ -161,7 +209,7 @@ export default function BannersPage() {
     formData.append("isActive", String(isActive));
     try {
       await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}api/banners/${id}`, { method: "PUT", body: formData });
-      mutate(`${process.env.NEXT_PUBLIC_API_URL}api/banners/admin/all`);
+      refreshBanners();
     } catch {
       toast.error("Gagal mengubah status.");
     }
@@ -182,11 +230,13 @@ export default function BannersPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ items }),
       });
-      mutate(`${process.env.NEXT_PUBLIC_API_URL}api/banners/admin/all`);
+      refreshBanners();
     } catch {
       toast.error("Gagal mengatur ulang.");
     }
   };
+
+  const allBanners = [...optimisticBanners, ...(banners || [])];
 
   if (isLoading) return <div className="p-8"><LoadingSpinner /></div>;
   if (error) return <div className="p-8 text-red-500">Gagal memuat banner.</div>;
@@ -256,9 +306,9 @@ export default function BannersPage() {
                 </div>
               </div>
               <div className="flex gap-2 mt-4">
-                <button type="submit" disabled={submitting}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400">
-                  {submitting ? "Menyimpan..." : "Simpan"}
+                <button type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                  Simpan
                 </button>
                 <button type="button" onClick={resetForm}
                   className="px-4 py-2 border rounded-lg hover:bg-gray-100">
@@ -268,16 +318,17 @@ export default function BannersPage() {
             </form>
           )}
 
-          {!banners || banners.length === 0 ? (
+          {allBanners.length === 0 ? (
             <p className="text-gray-500 text-center py-8">Belum ada banner. Klik "Tambah Banner" untuk mulai.</p>
           ) : (
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-              <SortableContext items={banners.map((b) => b.id)} strategy={verticalListSortingStrategy}>
+              <SortableContext items={allBanners.map((b) => b.id)} strategy={verticalListSortingStrategy}>
                 <div className="space-y-3">
-                  {banners.map((banner) => (
+                  {allBanners.map((banner: OptimisticBanner) => (
                     <SortableBannerCard
                       key={banner.id}
                       banner={banner}
+                      task={banner._taskId ? uploads[banner._taskId] : undefined}
                       onDelete={handleDelete}
                       onToggleActive={handleToggleActive}
                       onEdit={openEdit}

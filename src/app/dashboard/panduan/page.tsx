@@ -102,6 +102,11 @@ const sections = [
           "Hapus: hapus berita permanen",
           "Cari: filter berdasarkan judul",
         ],
+        details: [
+          "Featured Image: gambar utama berita. Di halaman detail, gambar ditampilkan tanpa crop paksa — landscape & portrait ditampilkan proporsional dengan batas tinggi maksimal 70% layar.",
+          "Galeri Gambar: jika berita mengandung beberapa gambar (featured + inline), semua gambar bisa dijelajahi dengan tombol panah kiri/kanan dan indikator titik di bagian atas halaman detail.",
+          "Klik gambar untuk membuka lightbox layar penuh. Navigasi dengan panah atau klik titik indikator.",
+        ],
       },
       {
         title: "Banner — Kelola Banner Slider",
@@ -339,7 +344,7 @@ const sections = [
       {
         title: "Featured Image Berita",
         icon: Newspaper,
-        desc: "Ukuran ideal: 1200 × 630 px. Rasio 1.9:1. Format JPG/WebP. Maksimal 300 KB. Gambar akan ditampilkan sebagai thumbnail di list berita dan header di halaman detail.",
+        desc: "Ukuran ideal: 1200 × 630 px (landscape) atau 600 × 800 px (portrait). Format JPG/PNG/WebP. Maksimal 500 KB. Di halaman detail, gambar ditampilkan tanpa crop — landscape lebar penuh & portrait dibatasi tinggi 70% layar. Semua gambar dalam berita bisa dijelajahi via galeri/lightbox.",
       },
       {
         title: "Galeri Foto",
@@ -566,6 +571,20 @@ function GuideSection({ section }: any) {
                         <li key={j} className="flex items-start gap-2 text-sm text-gray-600">
                           <div className="w-1.5 h-1.5 rounded-full bg-sky-500 mt-2 shrink-0" />
                           {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {child.details && (
+                  <div>
+                    <p className="font-medium text-gray-700 text-xs uppercase tracking-wide mb-1">Detail Teknis:</p>
+                    <ul className="space-y-1">
+                      {child.details.map((d: string, j: number) => (
+                        <li key={j} className="flex items-start gap-2 text-sm text-gray-600">
+                          <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
+                          {d}
                         </li>
                       ))}
                     </ul>

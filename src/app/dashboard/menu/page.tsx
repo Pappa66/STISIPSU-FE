@@ -79,6 +79,17 @@ function SortableItem({
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const hasSubmenus = "submenus" in item && (item as NavItem).submenus?.length > 0;
+  const subCount = hasSubmenus ? (item as NavItem).submenus.length : 0;
+
+  const typeBadge = hasSubmenus
+    ? { label: "Induk Grup", class: "bg-gray-200 text-gray-600" }
+    : (item as any).type === "EXTERNAL"
+    ? { label: "Link Eksternal", class: "bg-purple-100 text-purple-700" }
+    : (item as any).type === "STATIC_PATH"
+    ? { label: "Path Statis", class: "bg-amber-100 text-amber-700" }
+    : { label: "Halaman Konten", class: "bg-sky-100 text-sky-700" };
+
   return (
     <div
       ref={setNodeRef}
@@ -88,31 +99,30 @@ function SortableItem({
         isSubmenu ? "bg-slate-100" : "bg-white border"
       } rounded-lg`}
     >
-      <div className="flex items-center flex-grow gap-3">
+      <div className="flex items-center flex-grow gap-2">
         <button
           {...listeners}
-          className="cursor-grab p-2 text-slate-500 hover:bg-slate-200 rounded-full"
+          className="cursor-grab p-2 text-slate-500 hover:bg-slate-200 rounded-full shrink-0"
         >
           <GripVertical size={16} />
         </button>
-        <span className={isSubmenu ? "text-sm" : "text-lg font-semibold"}>
-          {isSubmenu ? `- ${item.name}` : item.name}
+        <span className={`leading-tight ${isSubmenu ? "text-sm" : "text-base font-semibold"}`}>
+          {isSubmenu ? `— ${item.name}` : item.name}
         </span>
-        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
-          (item as any).type === "EXTERNAL" ? "bg-purple-100 text-purple-700" :
-          (item as any).type === "STATIC_PATH" ? "bg-amber-100 text-amber-700" :
-          "bg-sky-100 text-sky-700"
-        }`}>
-          {(item as any).type === "EXTERNAL" ? "External" :
-           (item as any).type === "STATIC_PATH" ? "Halaman" :
-           "Internal"}
+        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0 ${typeBadge.class}`}>
+          {typeBadge.label}
         </span>
+        {hasSubmenus && (
+          <span className="text-[10px] text-gray-400 shrink-0">
+            {subCount} sub menu
+          </span>
+        )}
       </div>
-      <div className="flex items-center gap-1 ml-4">
+      <div className="flex items-center gap-1 ml-2 shrink-0">
         <Link
           href={`/dashboard/menu/edit/${item.id}`}
-          className="p-2 text-blue-600 hover:bg-blue-100 rounded-full"
-          title="Edit"
+          className={`p-2 rounded-full ${hasSubmenus ? "text-gray-400 hover:bg-gray-100" : "text-blue-600 hover:bg-blue-100"}`}
+          title={hasSubmenus ? "Edit nama & ikon (menu induk)" : "Edit"}
         >
           <Edit size={16} />
         </Link>

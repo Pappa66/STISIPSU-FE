@@ -164,14 +164,26 @@ export default function EditMenuPage() {
                   className="w-full px-3 py-2 border rounded-md bg-background"
                 />
               </div>
+              {hasSubmenus ? (
+                <div>
+                  <label className="block text-sm font-medium mb-2">Jenis Menu</label>
+                  <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-gray-200 text-gray-600">Induk</span>
+                      <span className="text-sm font-semibold text-gray-800">Menu Induk (Kategori)</span>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Menu ini memiliki {(menuItem as NavItem).submenus?.length || 0} sub menu, sehingga berfungsi sebagai kategori/induk.
+                      Menu induk tidak memiliki link — klik pada nama menu di navigasi akan membuka sub menu pertama.
+                    </p>
+                    <p className="text-xs text-gray-400 mt-2">
+                      Nama dan ikon bisa diubah. Untuk mengubah jenis atau link, hapus semua sub menu terlebih dahulu.
+                    </p>
+                  </div>
+                </div>
+              ) : (
               <div>
                 <label className="block text-sm font-medium mb-2">Jenis Link</label>
-                {hasSubmenus && (
-                  <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800">
-                    Menu ini memiliki sub menu, sehingga tidak bisa menggunakan Halaman Internal.
-                    Pilih Path Halaman Statis atau Link Eksternal.
-                  </div>
-                )}
                 <fieldset className="space-y-3">
                   <label className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition ${type === "INTERNAL" ? "border-sky-400 bg-sky-50" : "border-gray-200"}`}>
                     <input
@@ -180,14 +192,13 @@ export default function EditMenuPage() {
                       value="INTERNAL"
                       checked={type === "INTERNAL"}
                       onChange={() => setType("INTERNAL")}
-                      disabled={hasSubmenus}
                       className="h-4 w-4 mt-0.5"
                     />
                     <div>
-                      <span className={`text-sm font-medium ${hasSubmenus ? "text-gray-400" : ""}`}>
+                      <span className="text-sm font-medium">
                         {typeDescriptions.INTERNAL.label}
                       </span>
-                      <p className={`text-xs mt-0.5 ${hasSubmenus ? "text-gray-300" : "text-gray-500"}`}>
+                      <p className="text-xs text-gray-500 mt-0.5">
                         {typeDescriptions.INTERNAL.desc}
                       </p>
                     </div>

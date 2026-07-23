@@ -161,13 +161,13 @@ const sections = [
           "Hapus: hapus menu beserta sub-menunya",
         ],
         details: [
-          "Menu dengan sub menu tidak bisa memiliki halaman internal — fungsinya sebagai grup/kategori.",
-          "Ada 3 jenis link pada menu:",
+          "Menu yang memiliki sub menu otomatis menjadi Menu Induk (kategori). Menu induk tidak bisa memiliki link — klik pada nama menu di navigasi akan membuka sub menu pertama. Hanya nama & ikon yang bisa diedit pada menu induk.",
+          "Ada 3 jenis link untuk menu tanpa sub menu:",
         ],
         linkTypes: [
-          { type: "Halaman Internal (dari Konten)", desc: "Mengarah ke halaman dinamis yang kontennya dikelola Admin via editor blok. Setelah dipilih, halaman otomatis dibuat dan bisa diedit tautannya.", icon: "FileText" },
-          { type: "Path Halaman Statis", desc: "Mengarah ke halaman bawaan website seperti /, /berita, /repository, /galeri, /kontak, /kalender. Isi path diawali / (contoh: /berita). Tidak boleh URL lengkap.", icon: "Link2" },
-          { type: "Link Eksternal", desc: "Mengarah ke situs luar. Isi URL lengkap dengan https:// (contoh: https://pmb.stisipsukabumi.ac.id). Tidak boleh path relatif.", icon: "Globe" },
+          { type: "Halaman Internal (dari Konten)", desc: "Menu mengarah ke halaman dinamis yang kontennya dikelola Admin via editor blok. Setelah dipilih, halaman otomatis dibuat. Cocok untuk halaman profil, visi misi, sambutan, dll.", icon: "FileText" },
+          { type: "Path Halaman Statis", desc: "Menu mengarah ke halaman bawaan website seperti /berita, /repository, /galeri, /kontak, /kalender, /dosen. Isi path diawali / (contoh: /berita). TIDAK boleh URL lengkap (https://...).", icon: "Link2" },
+          { type: "Link Eksternal", desc: "Menu mengarah ke situs luar seperti PMB, media sosial, atau Google Drive. Isi URL lengkap dengan https:// (contoh: https://pmb.stisipsukabumi.ac.id). TIDAK boleh path relatif (/...).", icon: "Globe" },
         ],
       },
       {

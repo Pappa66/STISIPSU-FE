@@ -65,6 +65,7 @@ const navGroups: Record<string, NavGroup[]> = {
         { href: "/dashboard/pages", label: "Halaman", icon: Notebook },
         { href: "/dashboard/news", label: "Berita", icon: Newspaper },
         { href: "/dashboard/banners", label: "Banner", icon: Image },
+        { href: "/dashboard/hero", label: "Hero", icon: LayoutDashboard },
         { href: "/dashboard/gallery", label: "Galeri", icon: Camera },
         { href: "/dashboard/announcements", label: "Pengumuman", icon: Megaphone },
       ],

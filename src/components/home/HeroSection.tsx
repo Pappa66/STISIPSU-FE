@@ -5,11 +5,21 @@ import Image from "next/image";
 import Link from "next/link";
 import OptimizedImage from '@/components/common/OptimizedImage';
 import AnimatedSection from '@/components/common/AnimatedSection';
-import { User, Calendar } from "lucide-react";
+import { User, Calendar, ArrowRight } from "lucide-react";
 import useSWR from "swr";
 import BannerSlider from "./BannerSlider";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+interface HeroData {
+  title: string;
+  subtitle: string;
+  description: string;
+  imageUrl: string;
+  linkUrl: string;
+  linkLabel: string;
+  isActive: boolean;
+}
 
 export default function HeroSection() {
   const { data: berita, isLoading: beritaLoading } = useSWR<{
@@ -21,41 +31,48 @@ export default function HeroSection() {
     fetcher
   );
 
+  const { data: hero } = useSWR<HeroData>(
+    `${process.env.NEXT_PUBLIC_API_URL}api/public/hero`,
+    fetcher
+  );
+
   return (
     <>
       <BannerSlider />
 
+      {hero?.isActive !== false && (
       <section className="bg-[#0077c2] text-white py-5 px-4">
-  <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-2 items-center">
-    {/* KIRI: Teks + Tombol */}
-    <div className="space-y-4">
-      <h2 className="text-2xl md:text-3xl font-bold">
-        Pendaftaran Mahasiswa Baru
-      </h2>
-      <h3 className="text-lg md:text-xl font-semibold">
-        Siap Bergabung? Daftar Sekarang!
-      </h3>
-      <p className="text-white/90 leading-relaxed">
-        Proses pendaftaran cepat, mudah, dan bisa dilakukan 100% online.
-        Dapatkan pengalaman belajar terbaik di STISIP Sukabumi.
-      </p>
-      {/* Tombol Aksi */}
-    </div>
-    
-    {/* KANAN: Gambar */}
-    <div className="flex justify-center">
-      {/* Ini sudah benar, cuma ganti src saja */}
-      <Image
-        src="/images/logo-kampus.png"
-        alt="Logo STISIP Syamsul Ulum"
-        width={200}
-        height={200}
-        className="object-contain"
-        priority
-      />
-    </div>
-  </div>
-</section>
+        <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-2 items-center">
+          <div className="space-y-4">
+            <h2 className="text-2xl md:text-3xl font-bold">
+              {hero?.title || "Pendaftaran Mahasiswa Baru"}
+            </h2>
+            {hero?.subtitle && (
+              <h3 className="text-lg md:text-xl font-semibold">{hero.subtitle}</h3>
+            )}
+            {hero?.description && (
+              <p className="text-white/90 leading-relaxed">{hero.description}</p>
+            )}
+            {hero?.linkUrl && (
+              <a href={hero.linkUrl} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 mt-2 px-6 py-3 bg-white text-[#0077c2] font-semibold rounded-lg hover:bg-sky-50 transition">
+                {hero.linkLabel || "Daftar Sekarang"} <ArrowRight size={18} />
+              </a>
+            )}
+          </div>
+          <div className="flex justify-center">
+            <Image
+              src={hero?.imageUrl || "/images/logo-kampus.png"}
+              alt="Logo STISIP Syamsul Ulum"
+              width={200}
+              height={200}
+              className="object-contain"
+              priority
+            />
+          </div>
+        </div>
+      </section>
+      )}
 
       <AnimatedSection direction="up">
       <section className="bg-white py-12 px-4">

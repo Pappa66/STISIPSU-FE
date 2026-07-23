@@ -78,6 +78,17 @@ const PasswordForm = ({ token }: { token: string | null }) => {
   const [showOld, setShowOld] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [pwStrength, setPwStrength] = useState({ score: 0, msg: "" });
+
+  const checkPwStrength = (pw: string) => {
+    let score = 0;
+    if (pw.length >= 8) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[a-z]/.test(pw)) score++;
+    if (/[!@#$%^&*(),.?":{}|<>_\-]/.test(pw)) score++;
+    const labels = ["", "Lemah", "Cukup", "Kuat", "Sangat Kuat"];
+    setPwStrength({ score, msg: labels[score] || "" });
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -89,8 +100,20 @@ const PasswordForm = ({ token }: { token: string | null }) => {
       return;
     }
 
-    if (newPassword.length < 6) {
-      toast.error("Password baru minimal 6 karakter.");
+    if (newPassword.length < 8) {
+      toast.error("Password baru minimal 8 karakter.");
+      return;
+    }
+    if (!/[A-Z]/.test(newPassword)) {
+      toast.error("Password harus mengandung huruf BESAR.");
+      return;
+    }
+    if (!/[a-z]/.test(newPassword)) {
+      toast.error("Password harus mengandung huruf kecil.");
+      return;
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>_\-]/.test(newPassword)) {
+      toast.error("Password harus mengandung simbol (!@#$%^&* dll).");
       return;
     }
 
@@ -159,9 +182,10 @@ const PasswordForm = ({ token }: { token: string | null }) => {
               type={isPasswordVisible ? "text" : "password"}
               name={field}
               value={(formData as any)[field]}
-              onChange={(e) =>
-                setFormData({ ...formData, [field]: e.target.value })
-              }
+              onChange={(e) => {
+                setFormData({ ...formData, [field]: e.target.value });
+                if (field === "newPassword") checkPwStrength(e.target.value);
+              }}
               required
               className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 text-sm pr-10"
             />
@@ -172,6 +196,29 @@ const PasswordForm = ({ token }: { token: string | null }) => {
             >
               {isPasswordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
+            {field === "newPassword" && pwStrength.msg && (
+              <div className="mt-1 flex items-center gap-2">
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4].map((s) => (
+                    <div
+                      key={s}
+                      className={`h-1.5 w-6 rounded-full ${
+                        s <= pwStrength.score
+                          ? pwStrength.score <= 1
+                            ? "bg-red-400"
+                            : pwStrength.score <= 2
+                            ? "bg-yellow-400"
+                            : pwStrength.score <= 3
+                            ? "bg-lime-400"
+                            : "bg-green-400"
+                          : "bg-gray-200"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="text-xs text-gray-500">{pwStrength.msg}</span>
+              </div>
+            )}
           </div>
         );
       })}

@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import Image from "next/image";
 import { HiOutlineMail, HiLockClosed, HiEye, HiEyeOff } from "react-icons/hi";
+import { FcGoogle } from "react-icons/fc";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,6 +16,57 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const googleBtnRef = useRef<HTMLDivElement>(null);
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+  const handleGoogleCredential = async (credential: string) => {
+    setGoogleLoading(true);
+    setMessage("");
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}api/auth/google`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ credential }),
+        }
+      );
+      const data = await res.json();
+      if (res.ok && data.token) {
+        login(data.token);
+        setMessage("LOGIN BERHASIL!");
+        setIsSuccess(true);
+        setTimeout(() => router.push("/dashboard"), 1500);
+      } else {
+        setMessage(data.message || "Login Google gagal.");
+      }
+    } catch {
+      setMessage("Terjadi kesalahan jaringan. Silakan coba lagi.");
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!googleClientId || !googleBtnRef.current) return;
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      (window as any).google?.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: (response: any) => handleGoogleCredential(response.credential),
+        auto_prompt: false,
+      });
+      (window as any).google?.accounts.id.renderButton(
+        googleBtnRef.current,
+        { theme: "outline", size: "large", text: "sign_in_with", shape: "rectangular", width: 300 }
+      );
+    };
+    document.body.appendChild(script);
+  }, [googleClientId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -177,7 +229,30 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* BACK TO HOME */}
+            {/* DIVIDER */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-white/30" />
+              <span className="text-xs text-white/60">atau</span>
+              <div className="flex-1 h-px bg-white/30" />
+            </div>
+
+            {/* GOOGLE LOGIN */}
+            {googleClientId ? (
+              <div className="flex justify-center">
+                {googleLoading ? (
+                  <div className="w-full py-3 text-center text-sm text-white/70">Memproses login Google...</div>
+                ) : (
+                  <div ref={googleBtnRef} />
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-md border border-dashed border-white/30 text-white/50 text-sm cursor-default">
+                <FcGoogle size={20} />
+                Login dengan Google (belum dikonfigurasi)
+              </div>
+            )}
+
+            {/* BACK TO HOME */}
           <div className="text-center mt-2">
             <button
               onClick={() => router.push("/")}

@@ -204,7 +204,7 @@ function renderBlocksToHTML(blocks: any[], baseUrl: string): string {
             ? block.url
             : `${baseUrl}${block.url}`;
           return `<div class="flex justify-center my-4">
-                    <img src="${imgSrc}" alt="" loading="lazy" class="rounded-md shadow-sm max-w-full max-h-[250px] object-contain" />
+                    <img src="${imgSrc}" alt="" loading="lazy" decoding="async" class="rounded-md shadow-sm w-full max-w-[700px] h-auto object-contain" />
                   </div>`;
 
         case "video":

@@ -177,6 +177,10 @@ export default function MenuManagementPage() {
   );
 
   const handleCreateMenu = (submenu: boolean, pid?: string) => {
+    if (!submenu && menuItems && menuItems.length >= 10) {
+      toast.error("Maksimal 10 menu utama. Gunakan sub menu untuk menambahkan item lainnya.");
+      return;
+    }
     setIsSubmenu(submenu);
     setParentId(pid || null);
     setShowCreateModal(true);
@@ -294,11 +298,17 @@ export default function MenuManagementPage() {
     <main className="px-4 sm:px-6 lg:px-8 py-6">
       <div className="max-w-screen-xl mx-auto">
         <div className="bg-white shadow-md rounded-xl p-6 sm:p-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold">Manajemen Menu</h1>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold">Manajemen Menu</h1>
+              <p className="text-sm text-gray-500 mt-1">
+                {(menuItems || []).length}/10 menu utama &mdash; maksimal 10, sisanya bisa dijadikan sub menu
+              </p>
+            </div>
             <button
               onClick={() => handleCreateMenu(false)}
-              className="flex items-center gap-2 bg-sky-600 text-white px-4 py-2 rounded font-semibold hover:bg-sky-700"
+              disabled={menuItems && menuItems.length >= 10}
+              className="flex items-center justify-center gap-2 bg-sky-600 text-white px-4 py-2 rounded font-semibold hover:bg-sky-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               <Plus size={18} /> Tambah Menu Utama
             </button>

@@ -154,8 +154,8 @@ const sections = [
         icon: Menu,
         desc: "Mengatur struktur menu navigasi website. Menu bisa memiliki sub-menu (anak).",
         actions: [
-          "Tambah Menu Utama: buat item navigasi baru",
-          "Tambah Sub Menu: tambah item anak di bawah menu utama",
+          "Tambah Menu Utama: buat item navigasi baru (maksimal 10 menu utama)",
+          "Tambah Sub Menu: tambah item anak di bawah menu utama — hanya menu Halaman Internal yang bisa punya sub menu",
           "Drag & drop: urutkan menu dan sub-menu",
           "Edit: ubah properti menu (nama, jenis link, URL, ikon)",
           "Hapus: hapus menu beserta sub-menunya",

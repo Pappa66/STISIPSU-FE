@@ -181,7 +181,7 @@ export default function EditMenuPage() {
                     </p>
                   </div>
                 </div>
-              ) : (
+              ) : (<>
               <div>
                 <label className="block text-sm font-medium mb-2">Jenis Link</label>
                 <fieldset className="space-y-3">
@@ -235,7 +235,7 @@ export default function EditMenuPage() {
                 <p className="text-xs text-gray-400 mt-2">{currentDesc.hint}</p>
               </div>
 
-              {type === "INTERNAL" && !hasSubmenus && menuItem.post?.id && (
+              {type === "INTERNAL" && menuItem.post?.id && (
                 <div>
                   <label className="block text-sm font-medium">
                     Konten Halaman
@@ -248,7 +248,7 @@ export default function EditMenuPage() {
                   </Link>
                 </div>
               )}
-              {type === "INTERNAL" && !hasSubmenus && !menuItem.post?.id && (
+              {type === "INTERNAL" && !menuItem.post?.id && (
                 <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
                   Menu ini belum memiliki halaman. Setelah disimpan, halaman akan otomatis dibuat dan link edit akan muncul di sini.
                 </div>
@@ -285,7 +285,7 @@ export default function EditMenuPage() {
                   <p className="text-xs text-gray-400 mt-1">Harus URL lengkap dengan https://, contoh: https://pmb.stisipsukabumi.ac.id</p>
                 </div>
               )}
-              {type === "INTERNAL" && !hasSubmenus && (
+              {type === "INTERNAL" && (
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     Ikon Menu (opsional)
@@ -314,6 +314,7 @@ export default function EditMenuPage() {
                   )}
                 </div>
               )}
+              </>)}
             </div>
 
             <div className="flex justify-end pt-4">

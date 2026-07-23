@@ -130,7 +130,7 @@ export default function HeroPage() {
                   <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
                 </div>
                 {form.imageUrl && (
-                  <div className="relative w-16 h-16 sm:w-24 sm:h-24 rounded-lg overflow-hidden border flex-shrink-0 bg-gray-50">
+                  <div className="relative w-10 h-10 sm:w-24 sm:h-24 rounded-lg overflow-hidden border flex-shrink-0 bg-gray-50">
                     <img src={form.imageUrl.startsWith("http") ? form.imageUrl : `${baseApi}/${form.imageUrl.replace(/^\//, "")}`}
                       alt="preview" className="w-full h-full object-contain" />
                   </div>

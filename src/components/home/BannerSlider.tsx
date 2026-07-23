@@ -45,40 +45,51 @@ export default function BannerSlider() {
 
   const banner = banners[current];
 
+  const overlayContent = (
+    <div className="absolute inset-0 flex items-center">
+      <div className="container mx-auto px-4 md:px-12 text-white">
+        <div className="max-w-2xl transition-all duration-500">
+          {banner.subtitle && (
+            <p className="text-lg md:text-2xl lg:text-3xl font-semibold drop-shadow-lg text-white/90">
+              {banner.subtitle}
+            </p>
+          )}
+          {banner.linkUrl && (
+            <span className="inline-block mt-4 px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition text-sm md:text-base">
+              Selengkapnya
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <section className="relative w-full h-[400px] md:h-[500px] overflow-hidden bg-gray-900">
+    <section className="relative w-full min-h-[250px] sm:min-h-[300px] md:min-h-[400px] lg:min-h-[480px] overflow-hidden bg-gray-900 my-2 sm:my-4">
       {banners.map((b, i) => (
         <div
           key={b.id}
           className={`absolute inset-0 transition-opacity duration-700 ${i === current ? "opacity-100" : "opacity-0"}`}
         >
-          <OptimizedImage src={b.imageUrl} alt={b.title} fill className="object-cover" />
+          <OptimizedImage
+            src={b.imageUrl}
+            alt=""
+            fill
+            className="object-cover"
+            priority={i === current}
+            sizes="100vw"
+          />
           <div className="absolute inset-0 bg-black/40" />
         </div>
       ))}
 
-      <div className="absolute inset-0 flex items-center">
-        <div className="container mx-auto px-4 md:px-12 text-white">
-          <div className="max-w-2xl transition-all duration-500">
-            <h1 className="text-3xl md:text-5xl font-bold drop-shadow-lg">
-              {banner.title}
-            </h1>
-            {banner.subtitle && (
-              <p className="mt-4 text-lg md:text-xl text-white/90 drop-shadow">
-                {banner.subtitle}
-              </p>
-            )}
-            {banner.linkUrl && (
-              <Link
-                href={banner.linkUrl}
-                className="inline-block mt-6 px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition"
-              >
-                Selengkapnya
-              </Link>
-            )}
-          </div>
-        </div>
-      </div>
+      {banner.linkUrl ? (
+        <a href={banner.linkUrl} target="_blank" rel="noopener noreferrer" className="absolute inset-0">
+          {overlayContent}
+        </a>
+      ) : (
+        overlayContent
+      )}
 
       {banners.length > 1 && (
         <>

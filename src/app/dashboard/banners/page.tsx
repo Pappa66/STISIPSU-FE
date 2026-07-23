@@ -273,6 +273,7 @@ export default function BannersPage() {
                   <label className="block text-sm font-medium mb-1">Link URL (opsional)</label>
                   <input type="url" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)}
                     className="w-full px-3 py-2 border rounded-md text-sm" placeholder="https://..." />
+                  <p className="text-xs text-gray-400 mt-1">Jika diisi, pengunjung akan diarahkan ke link ini saat banner diklik.</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Gambar {editingBanner ? "(biarkan kosong jika tidak diganti)" : "*"}</label>

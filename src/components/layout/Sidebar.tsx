@@ -256,8 +256,9 @@ export default function Sidebar() {
 
         {/* Nav Menu */}
         <nav className={clsx(
-          "flex-1 overflow-y-scroll bg-white scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100",
-          collapsed ? "px-2 py-4 space-y-2" : "px-3 py-4 space-y-4"
+          "flex-1 overflow-y-scroll bg-white scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 overscroll-contain",
+          collapsed ? "px-2 py-4 space-y-2" : "px-3 py-4 space-y-4",
+          "pb-16 md:pb-4"
         )}>
           {(navGroups[role] || []).map((group) => (
             <div key={group.label}>

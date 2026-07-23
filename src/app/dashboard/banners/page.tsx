@@ -226,15 +226,33 @@ export default function BannersPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Gambar {editingBanner ? "(biarkan kosong jika tidak diganti)" : "*"}</label>
-                  <input type="file" ref={fileInputRef} accept="image/*"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-blue-500', 'bg-blue-50'); }}
+                    onDragLeave={(e) => { e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50'); }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50');
+                      const f = e.dataTransfer.files?.[0];
                       if (f) { setFile(f); setPreview(URL.createObjectURL(f)); }
                     }}
-                    className="w-full text-sm" />
-                  {preview && (
-                    <img src={preview} alt="preview" className="mt-2 h-20 w-auto rounded object-cover" />
-                  )}
+                    onClick={() => fileInputRef.current?.click()}
+                    className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-400 transition-colors"
+                  >
+                    <input type="file" ref={fileInputRef} accept="image/*" className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) { setFile(f); setPreview(URL.createObjectURL(f)); }
+                      }} />
+                    {preview ? (
+                      <img src={preview} alt="preview" className="mx-auto h-24 w-auto rounded object-cover" />
+                    ) : (
+                      <div className="text-gray-500">
+                        <svg className="mx-auto h-10 w-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                        <p className="text-sm">Seret & lepas gambar di sini, atau klik untuk memilih</p>
+                        <p className="text-xs mt-1 text-gray-400">JPG, PNG, WebP (maks. 10MB)</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="flex gap-2 mt-4">

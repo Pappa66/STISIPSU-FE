@@ -106,7 +106,7 @@ export default function KalenderPage() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-7 bg-sky-100">
+              <div className="grid grid-cols-7 bg-sky-100 gap-[1px]">
                 {DAYS.map(d => (
                   <div key={d} className="bg-sky-50/80 text-center text-xs font-semibold text-sky-600 py-2.5">
                     {d}
@@ -114,7 +114,7 @@ export default function KalenderPage() {
                 ))}
               </div>
 
-              <div className="grid grid-cols-7 bg-sky-100">
+              <div className="grid grid-cols-7 bg-sky-100 gap-[1px]">
                 {calendarDays.map((dateStr, i) => {
                   if (!dateStr) return <div key={`empty-${i}`} className="bg-white min-h-[80px] md:min-h-[100px]" />;
                   const day = parseInt(dateStr.split("-")[2]);
@@ -130,7 +130,7 @@ export default function KalenderPage() {
                         isSelected ? "ring-2 ring-inset ring-sky-500 bg-sky-50 z-10" : ""
                       }`}
                     >
-                      <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-sm font-semibold mb-1 transition ${
+                      <span className={`flex items-center justify-center w-7 h-7 rounded-lg text-sm font-semibold mb-1 mx-auto transition ${
                         isToday
                           ? "bg-gradient-to-br from-sky-600 to-blue-600 text-white shadow-sm"
                           : isSelected
@@ -162,15 +162,15 @@ export default function KalenderPage() {
           <div className="w-full md:w-72 lg:w-80 flex-shrink-0">
             <div className="bg-white rounded-2xl shadow-xl shadow-sky-900/5 border border-sky-100 p-4 md:p-5 sticky top-6">
               {/* Legend */}
-              <div className="space-y-2 pb-4 mb-4 border-b border-sky-100">
+              <div className="space-y-2.5 pb-4 mb-4 border-b border-sky-100">
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Keterangan</p>
                 {Object.entries(TYPE_COLORS).map(([type, color]) => {
                   const meta = TYPE_META[type] || { label: type, icon: CalendarDays };
                   const Icon = meta.icon;
                   return (
-                    <div key={type} className="flex items-center gap-2.5 text-sm text-gray-600">
-                      <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: color }} />
-                      <Icon size={13} className="text-gray-400 flex-shrink-0" />
+                    <div key={type} className="inline-flex items-center gap-2 text-sm text-gray-600 leading-none">
+                      <span className="w-3.5 h-3.5 rounded-sm flex-shrink-0 shadow-sm" style={{ backgroundColor: color }} />
+                      <Icon size={14} className="text-gray-400 flex-shrink-0" />
                       <span>{meta.label}</span>
                     </div>
                   );

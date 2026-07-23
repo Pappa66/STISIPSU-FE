@@ -41,7 +41,7 @@ export default function BannerSlider() {
     return () => clearInterval(timer);
   }, [banners, next]);
 
-  if (isLoading) return <div className="h-64 bg-gray-100 animate-pulse" />;
+  if (isLoading) return <div className="aspect-[21/9] md:aspect-[3/1] bg-gray-100 animate-pulse" />;
   if (!banners || banners.length === 0) return null;
 
   const banner = banners[current];
@@ -67,7 +67,7 @@ export default function BannerSlider() {
 
   return (
     <section
-      className="relative w-full min-h-[250px] sm:min-h-[300px] md:min-h-[400px] lg:min-h-[480px] overflow-hidden bg-gray-900 mt-4 mb-16 sm:mt-6 sm:mb-24"
+      className="relative w-full aspect-[21/9] md:aspect-[3/1] overflow-hidden bg-gray-900 mt-4 mb-16 sm:mt-6 sm:mb-24"
       onMouseEnter={() => { isPaused.current = true; }}
       onMouseLeave={() => { isPaused.current = false; }}
     >
@@ -80,7 +80,7 @@ export default function BannerSlider() {
             src={b.imageUrl}
             alt=""
             fill
-            className="object-contain"
+            className="object-cover"
             priority={i === current}
             sizes="100vw"
           />

@@ -70,7 +70,7 @@ export default function PopupAnnouncement() {
                 src={announcement.imageUrl}
                 alt="Pengumuman"
                 fill
-              />
+                className="object-contain" />
               <div className="absolute inset-0 bg-black/15" />
             </div>
           </div>

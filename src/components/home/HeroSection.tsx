@@ -99,20 +99,20 @@ export default function HeroSection() {
                   <Link
                     key={item.id}
                     href={`/berita/${item.slug}`}
-                    className="block rounded-lg border border-gray-200 overflow-hidden shadow hover:shadow-lg transition group bg-white"
+                    className="block rounded-lg border border-gray-200 overflow-hidden shadow hover:shadow-lg transition group bg-white h-full flex flex-col"
                   >
-                    <div className="relative h-48 w-full">
+                    <div className="relative h-48 w-full shrink-0">
                       <OptimizedImage
                         src={item.featuredImageUrl || "https://placehold.co/600x400?text=Berita"}
                         alt={item.title}
                         fill
                       />
                     </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-bold text-gray-800 group-hover:text-sky-700 mb-2">
+                    <div className="p-4 flex flex-col flex-1">
+                      <h3 className="text-lg font-bold text-gray-800 group-hover:text-sky-700 line-clamp-2">
                         {item.title}
                       </h3>
-                      <div className="mt-2 flex items-center space-x-3 text-xs text-gray-500">
+                      <div className="mt-auto pt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
                         <div className="flex items-center gap-1.5">
                           <User size={12} />
                           <span>{item.author?.name}</span>

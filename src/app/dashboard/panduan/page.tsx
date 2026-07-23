@@ -442,6 +442,16 @@ const sections = [
     ],
   },
   {
+    id: "tips",
+    title: "Tips Optimalisasi Tampilan",
+    icon: Lightbulb,
+    content: [
+      "Tampilan website yang menarik sangat bergantung pada kreativitas Admin dalam mengelola dan mengatur konten. Platform ini menyediakan berbagai fitur fleksibel — hasil akhir yang maksimal datang dari pemahaman dan eksplorasi admin terhadap setiap fitur yang tersedia.",
+      "",
+      "Gunakan gambar dengan komposisi dan resolusi yang baik, atur tata letak menu secara logis, pilih banner dengan visual yang kuat, dan pastikan setiap konten memberikan nilai informasi bagi pengunjung. Portal yang informatif dan enak dipandang adalah cerminan dari pengelola yang teliti dan kreatif.",
+    ],
+  },
+  {
     id: "recommendations",
     title: "Rekomendasi & Rencana Pengembangan",
     icon: Lightbulb,

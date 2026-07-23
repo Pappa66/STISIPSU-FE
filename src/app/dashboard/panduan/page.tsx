@@ -157,8 +157,17 @@ const sections = [
           "Tambah Menu Utama: buat item navigasi baru",
           "Tambah Sub Menu: tambah item anak di bawah menu utama",
           "Drag & drop: urutkan menu dan sub-menu",
-          "Edit: ubah properti menu (nama, link ke halaman, URL kustom, ikon)",
+          "Edit: ubah properti menu (nama, jenis link, URL, ikon)",
           "Hapus: hapus menu beserta sub-menunya",
+        ],
+        details: [
+          "Menu dengan sub menu tidak bisa memiliki halaman internal — fungsinya sebagai grup/kategori.",
+          "Ada 3 jenis link pada menu:",
+        ],
+        linkTypes: [
+          { type: "Halaman Internal (dari Konten)", desc: "Mengarah ke halaman dinamis yang kontennya dikelola Admin via editor blok. Setelah dipilih, halaman otomatis dibuat dan bisa diedit tautannya.", icon: "FileText" },
+          { type: "Path Halaman Statis", desc: "Mengarah ke halaman bawaan website seperti /, /berita, /repository, /galeri, /kontak, /kalender. Isi path diawali / (contoh: /berita). Tidak boleh URL lengkap.", icon: "Link2" },
+          { type: "Link Eksternal", desc: "Mengarah ke situs luar. Isi URL lengkap dengan https:// (contoh: https://pmb.stisipsukabumi.ac.id). Tidak boleh path relatif.", icon: "Globe" },
         ],
       },
       {
@@ -613,6 +622,17 @@ function GuideSection({ section }: any) {
                         </li>
                       ))}
                     </ul>
+                  </div>
+                )}
+
+                {child.linkTypes && (
+                  <div className="space-y-2">
+                    {child.linkTypes.map((lt: any, j: number) => (
+                      <div key={j} className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                        <p className="text-sm font-semibold text-gray-800">{lt.type}</p>
+                        <p className="text-xs text-gray-600 mt-0.5">{lt.desc}</p>
+                      </div>
+                    ))}
                   </div>
                 )}
 

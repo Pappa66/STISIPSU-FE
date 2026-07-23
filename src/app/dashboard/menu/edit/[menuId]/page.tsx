@@ -12,27 +12,42 @@ import { fetchWithAuth } from "@/utils/api";
 import toast from "react-hot-toast";
 import { DynamicIcon, commonIconNames } from "@/lib/iconMap";
 
-// Fetcher untuk SWR
 const fetcher = (url: string) =>
   fetchWithAuth(url).then((res) => {
     if (!res.ok) throw new Error("Data tidak ditemukan");
     return res.json();
   });
 
+const typeDescriptions: Record<MenuType, { label: string; desc: string; hint: string }> = {
+  INTERNAL: {
+    label: "Halaman Internal (dari Konten)",
+    desc: "Menu mengarah ke halaman dinamis yang kontennya dikelola Admin via editor blok.",
+    hint: "Setelah memilih ini, buka/edit konten halaman melalui link yang muncul di bawah.",
+  },
+  STATIC_PATH: {
+    label: "Path Halaman Statis",
+    desc: "Menu mengarah ke halaman bawaan website, seperti /, /berita, /repository, /galeri, /kontak, /kalender.",
+    hint: "Isi path diawali /, contoh: /berita. Tidak boleh berupa URL lengkap.",
+  },
+  EXTERNAL: {
+    label: "Link Eksternal",
+    desc: "Menu mengarah ke situs luar, seperti website PMB, Google Drive, atau media sosial.",
+    hint: "Isi URL lengkap dengan https://, contoh: https://pmb.stisipsukabumi.ac.id",
+  },
+};
+
 export default function EditMenuPage() {
   const router = useRouter();
   const params = useParams();
   const menuId = params.menuId as string;
-  const { token, refreshMenus } = useAuthStore();
+  const { refreshMenus } = useAuthStore();
 
-  // State untuk form
   const [name, setName] = useState("");
   const [type, setType] = useState<MenuType>("INTERNAL");
   const [href, setHref] = useState("");
   const [icon, setIcon] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Gunakan SWR untuk mengambil data awal
   const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}api/menu-items/${menuId}`;
   const {
     data: menuItem,
@@ -40,7 +55,6 @@ export default function EditMenuPage() {
     isLoading,
   } = useSWR<NavItem | SubMenuItem>(apiUrl, fetcher);
 
-  // useEffect untuk mengisi form setelah data dari SWR tersedia
   useEffect(() => {
     if (menuItem) {
       setName(menuItem.name);
@@ -50,21 +64,45 @@ export default function EditMenuPage() {
     }
   }, [menuItem]);
 
+  const hasSubmenus = "submenus" in (menuItem || {}) && (menuItem as NavItem).submenus?.length > 0;
+
+  const validate = (): string | null => {
+    if (type === "STATIC_PATH") {
+      if (!href.startsWith("/")) return "Path statis harus diawali dengan / (contoh: /berita)";
+      if (href.includes("://")) return "Path statis tidak boleh berisi URL lengkap. Gunakan path seperti /berita";
+    }
+    if (type === "EXTERNAL") {
+      if (!href.startsWith("http://") && !href.startsWith("https://"))
+        return "URL eksternal harus diawali http:// atau https://";
+      if (href.startsWith("/")) return "URL eksternal tidak boleh diawali /. Gunakan URL lengkap seperti https://contoh.com";
+    }
+    return null;
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!menuItem) return;
 
+    const validationError = validate();
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+
     setIsSubmitting(true);
     const isSubmenu = "menuItemId" in menuItem;
-    const payload = {
+    const payload: any = {
       name,
       type,
       href: type === "EXTERNAL" || type === "STATIC_PATH" ? href : null,
-      postId: type === "INTERNAL" ? (menuItem as any).post?.id || null : undefined,
       icon: icon || null,
     };
 
-    // Perbaikan URL API
+    if (type === "INTERNAL" && !hasSubmenus) {
+      const currentPostId = (menuItem as any).post?.id || null;
+      if (currentPostId) payload.postId = currentPostId;
+    }
+
     const updateUrl = `${process.env.NEXT_PUBLIC_API_URL}api/${
       isSubmenu ? "submenus" : "menu-items"
     }/${menuId}`;
@@ -97,6 +135,8 @@ export default function EditMenuPage() {
   if (isLoading || !menuItem)
     return <div className="flex items-center justify-center py-12"><Spinner size="lg" /></div>;
 
+  const currentDesc = typeDescriptions[type];
+
   return (
     <main className="px-4 sm:px-6 lg:px-8 py-6">
       <div className="max-w-screen-xl mx-auto">
@@ -125,47 +165,66 @@ export default function EditMenuPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium">Jenis Link</label>
-                <fieldset className="mt-2 space-y-3">
-                  <label className="flex items-center">
+                <label className="block text-sm font-medium mb-2">Jenis Link</label>
+                {hasSubmenus && (
+                  <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800">
+                    Menu ini memiliki sub menu, sehingga tidak bisa menggunakan Halaman Internal.
+                    Pilih Path Halaman Statis atau Link Eksternal.
+                  </div>
+                )}
+                <fieldset className="space-y-3">
+                  <label className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition ${type === "INTERNAL" ? "border-sky-400 bg-sky-50" : "border-gray-200"}`}>
                     <input
                       type="radio"
                       name="type"
                       value="INTERNAL"
                       checked={type === "INTERNAL"}
                       onChange={() => setType("INTERNAL")}
-                      className="h-4 w-4"
+                      disabled={hasSubmenus}
+                      className="h-4 w-4 mt-0.5"
                     />
-                    <span className="ml-3 text-sm">
-                      Halaman Internal (dari Konten)
-                    </span>
+                    <div>
+                      <span className={`text-sm font-medium ${hasSubmenus ? "text-gray-400" : ""}`}>
+                        {typeDescriptions.INTERNAL.label}
+                      </span>
+                      <p className={`text-xs mt-0.5 ${hasSubmenus ? "text-gray-300" : "text-gray-500"}`}>
+                        {typeDescriptions.INTERNAL.desc}
+                      </p>
+                    </div>
                   </label>
-                  <label className="flex items-center">
+                  <label className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition ${type === "STATIC_PATH" ? "border-sky-400 bg-sky-50" : "border-gray-200"}`}>
                     <input
                       type="radio"
                       name="type"
                       value="STATIC_PATH"
                       checked={type === "STATIC_PATH"}
                       onChange={() => setType("STATIC_PATH")}
-                      className="h-4 w-4"
+                      className="h-4 w-4 mt-0.5"
                     />
-                    <span className="ml-3 text-sm">Path Halaman Statis</span>
+                    <div>
+                      <span className="text-sm font-medium">{typeDescriptions.STATIC_PATH.label}</span>
+                      <p className="text-xs text-gray-500 mt-0.5">{typeDescriptions.STATIC_PATH.desc}</p>
+                    </div>
                   </label>
-                  <label className="flex items-center">
+                  <label className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition ${type === "EXTERNAL" ? "border-sky-400 bg-sky-50" : "border-gray-200"}`}>
                     <input
                       type="radio"
                       name="type"
                       value="EXTERNAL"
                       checked={type === "EXTERNAL"}
                       onChange={() => setType("EXTERNAL")}
-                      className="h-4 w-4"
+                      className="h-4 w-4 mt-0.5"
                     />
-                    <span className="ml-3 text-sm">Link Eksternal</span>
+                    <div>
+                      <span className="text-sm font-medium">{typeDescriptions.EXTERNAL.label}</span>
+                      <p className="text-xs text-gray-500 mt-0.5">{typeDescriptions.EXTERNAL.desc}</p>
+                    </div>
                   </label>
                 </fieldset>
+                <p className="text-xs text-gray-400 mt-2">{currentDesc.hint}</p>
               </div>
 
-              {type === "INTERNAL" && menuItem.post?.id && (
+              {type === "INTERNAL" && !hasSubmenus && menuItem.post?.id && (
                 <div>
                   <label className="block text-sm font-medium">
                     Konten Halaman
@@ -174,8 +233,13 @@ export default function EditMenuPage() {
                     href={`/dashboard/editor/${menuItem.post.id}`}
                     className="mt-1 text-sm text-blue-600 hover:underline block"
                   >
-                    Klik di sini untuk mengedit
+                    Klik di sini untuk mengedit konten halaman ini
                   </Link>
+                </div>
+              )}
+              {type === "INTERNAL" && !hasSubmenus && !menuItem.post?.id && (
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
+                  Menu ini belum memiliki halaman. Setelah disimpan, halaman akan otomatis dibuat dan link edit akan muncul di sini.
                 </div>
               )}
               {type === "STATIC_PATH" && (
@@ -191,6 +255,7 @@ export default function EditMenuPage() {
                     required
                     className="w-full mt-1 px-3 py-2 border rounded-md bg-background"
                   />
+                  <p className="text-xs text-gray-400 mt-1">Harus diawali /, contoh: /berita, /repository, /galeri</p>
                 </div>
               )}
               {type === "EXTERNAL" && (
@@ -206,9 +271,10 @@ export default function EditMenuPage() {
                     required
                     className="w-full mt-1 px-3 py-2 border rounded-md bg-background"
                   />
+                  <p className="text-xs text-gray-400 mt-1">Harus URL lengkap dengan https://, contoh: https://pmb.stisipsukabumi.ac.id</p>
                 </div>
               )}
-              {type === "INTERNAL" && (
+              {type === "INTERNAL" && !hasSubmenus && (
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     Ikon Menu (opsional)
